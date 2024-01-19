@@ -1,0 +1,16 @@
+**/*/__pycache__
+*.png
+*.txt
+**/*/*.pyc
+**/*/.ipynb_checkpoints
+.mypy_cache/
+results/
+bulk_patches/
+data/*
+eval_results/
+Ov_SSL_checkpoints/
+heatmaps/
+Set-Tree/CRC_attentions_RF.npy
+*.csv
+TransPath/
+notebooks/beta_VAE_augmentor/

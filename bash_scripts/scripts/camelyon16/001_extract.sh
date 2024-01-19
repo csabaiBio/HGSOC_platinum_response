@@ -1,0 +1,2 @@
+python CLAM/create_patches_fp.py --source /tank/WSI_data/CAMELYON/CAMELYON16/images --save_dir /tank/WSI_data/CAMELYON/CAMELYON16/CLAM/level_1/slides/ --patch_size 224  --preset CLAM/presets/bwh_biopsy.csv  --seg  --patch  --stitch  --patch_level 1
+python CLAM/create_patches_fp.py --source /tank/WSI_data/CAMELYON/CAMELYON16/images --save_dir /tank/WSI_data/CAMELYON/CAMELYON16/CLAM/level_2/slides/ --patch_size 224  --preset CLAM/presets/bwh_biopsy.csv  --seg  --patch  --stitch  --patch_level 2

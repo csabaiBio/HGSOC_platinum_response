@@ -1,0 +1,6 @@
+[submodule "CLAM"]
+	path = CLAM
+	url = https://github.com/qbeer/CLAM_GCT.git
+[submodule "topk"]
+	path = topk
+	url = https://github.com/oval-group/smooth-topk.git

@@ -1,0 +1,4 @@
+include *.md pytest.ini
+recursive-include doc *.py *.rst
+recursive-include examples *.html *.js *.png *.py
+recursive-include tests *.dcm *.png *.py *.svs *.tiff
