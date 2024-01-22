@@ -4,6 +4,10 @@ from sklearn.preprocessing import StandardScaler
 import os
 from sklearn.impute import SimpleImputer, KNNImputer
 from sklearn.model_selection import KFold
+from joblib import Memory
+
+cachedir = './cache'  # Define a directory where the cache will be stored
+memory = Memory(cachedir, verbose=0)
 
 # This script takes raw published data from the studies used in the paper and creates the full pre-processed dataframe for training all models on.
 # This script then creates all splits for all tasks.
@@ -24,7 +28,7 @@ def custom_join(df1, df2, column1, column2):
 
     return result_df
 
-
+@memory.cache
 def clean_TCGA(TCGA_OV_slides_folder_path):
     """Take clinical and protemic data tables from Zhang et.al and organise into form for training and testing."""
     df_ov_clinical = pd.read_excel("/mnt/ncshare/ozkilim/BRCA/data/HGSOC_Zhang_TCGA_CPTAC_OV/mmc2.xlsx")
@@ -51,7 +55,7 @@ def clean_TCGA(TCGA_OV_slides_folder_path):
     tcga_proteomic_data["bcr_patient_barcode"] = tcga_proteomic_t.index.str.split('-', 1).str[1]
     # merge cilicnal and protemoic data 
     merged = pd.merge(tcga_proteomic_data,df_ov_clinical, on='bcr_patient_barcode')
-    # Merge slides 
+    # Merge slides into df
     # List all filenames in the folder
     filenames = [f for f in os.listdir(TCGA_OV_slides_folder_path) if os.path.isfile(os.path.join(TCGA_OV_slides_folder_path, f))]
     # Extract TCGA identifiers from filenames and create a new DataFrame
@@ -60,13 +64,20 @@ def clean_TCGA(TCGA_OV_slides_folder_path):
     file_df['bcr_patient_barcode'] = file_df['Filename'].apply(lambda x: '-'.join(x.split('-')[:3]))
     proteomics_and_wsi = merged.merge(file_df, on='bcr_patient_barcode', how='left')
     proteomics_and_wsi["Filename"] = proteomics_and_wsi["Filename"].str[:-4]
-    proteomics_and_wsi = proteomics_and_wsi.rename(columns={"bcr_patient_barcode":"case_id","Filename":"slide_id"})
+    proteomics_and_wsi = proteomics_and_wsi.rename(columns={"bcr_patient_barcode":"case_id","Filename":"slide_id",'age_at_diagnosis':'Patient Age','tumor_stage':'Tumor Substage','tumor_grade':'Tumor Grade','ethnicity':'Patient Ethnicity'})
+    proteomics_and_wsi["Sample Source"]="TCGA"
+    proteomics_and_wsi['Tumor type'] = "Primary"    
+    proteomics_and_wsi['Tumor Location Group'] = "OV"
+    # merge TCGA defined subgroups for patients.
+    proteomic_subtypes = pd.read_excel("../data/HGSOC_Zhang_TCGA_CPTAC_OV/1-s2.0-S0092867416306730-mmc5.xlsx", sheet_name='OvarianProteomicClusters')
+    proteomic_subtypes = proteomic_subtypes.rename(columns={'Tumor':'case_id'})
 
-    # TODO: check all relevant headers are attached. aka further metadata from df_ov_clinical
+    merged = pd.merge(proteomics_and_wsi,proteomic_subtypes, on='case_id',how='left')
 
-    return proteomics_and_wsi
+    return merged
 
 
+@memory.cache
 def clean_HGSOC():
     """Take clinical and protemic data tables from Chowrdy et.al and organise into form for training and testing."""
     # From Chowdry.et.al: 
@@ -86,16 +97,17 @@ def clean_HGSOC():
     # Fit and transform the DataFrame
     df_subtracted = pd.DataFrame(scaler.fit_transform(df_subtracted), columns=df_subtracted.columns, index=df_subtracted.index)
     df_subtracted["Sample ID1"] = df_subtracted.index
+    ### merge on column of TCGA Proteomic subtype catagories.
+    tcga_clusters = pd.read_excel('../data/HGSOC_processed_data/mmc4.xlsx',sheet_name="Inferred_TCGA_clusters_FD_prot")
+    tcga_clusters = tcga_clusters.rename(columns={'Subtype':'Proteomic subtype','Sample':'Sample ID1'})
+    tcga_clusters['Proteomic subtype'] = tcga_clusters['Proteomic subtype'].map({'IMR':'Immunoreactive','DIF':'Differentiated','MES':'Mesenchymal','PRO':'Proliferative'}) # align with TCGA names.
+
+    df_subtracted = pd.merge(df_subtracted,tcga_clusters, on='Sample ID1',how='left')
     result = custom_join(df_subtracted, clinical, 'Sample ID1', 'Sample ID')
     result['label'] = result['Tumor response'].map({'sensitive': 1, 'refractory': 0, 'Sensitive': 1, 'Refractory': 0})
 
-    headers = ["File Name","Patient ID","label","Tumor type"] #TODO:take more headers with metadata.
-    all_prots = result.iloc[:, 0:8800].columns 
-    # prots = all_prots.to_list()
-    for prot in all_prots:
-        headers.append(prot)
+    final_df = result.copy()
 
-    final_df = result[headers]
     final_df = result.rename(columns={'File Name': 'slide_id', 'Patient ID': 'case_id'})
     df_unique = final_df.drop_duplicates(subset="slide_id")
 
@@ -106,27 +118,27 @@ def clean_HGSOC():
 def save_splits(main_df,task_type,tumor_location):
     """Given a task type create spl;its to be used for experiments."""
     # Focus on the 'Sample source' and 'slide_id' columns
-    data = main_df[['Sample Source', 'slide_id','tumor_location']]
+    data = main_df[['Sample Source', 'slide_id','Tumor type']]
     #split by tumor location . 
-    data = data[data["tumor_location"]==tumor_location]
+    data = data[data["Tumor type"]==tumor_location]
     # Get unique sample sources
-    sample_sources = data['Sample Source'].unique()
+    # sample_sources = data['Sample Source'].unique()
 
     if task_type =="TCGA_train_HGSOC_test":
-        cv_data = data[data['sample_sources']=="TCGA"]
-        test_data = data[data['sample_sources']!="TCGA"] 
+        cv_data = data[data['Sample Source']=="TCGA"]['slide_id']
+        test_data = data[data['Sample Source']!="TCGA"]['slide_id']
 
     elif task_type =="HGSOC_train_TCGA_test":
-        cv_data = data[data['sample_sources']!="TCGA"]
-        test_data = data[data['sample_sources']=="TCGA"] 
+        cv_data = data[data['Sample Source']!="TCGA"]['slide_id']
+        test_data = data[data['Sample Source']=="TCGA"]['slide_id'] 
 
     elif task_type =="HGSOC_MAYO_hold_out":
-        cv_data = data[data['sample_sources'].isin(["UAB","FHCRC"])]
-        test_data = data[data['sample_sources']=="Mayo"]
+        cv_data = data[data['Sample Source'].isin(["UAB","FHCRC"])]['slide_id']
+        test_data = data[data['Sample Source']=="Mayo"]['slide_id']
     
     elif task_type =="HGSOC_UAB_hold_out":
-        cv_data = data[data['sample_sources'].isin(["Mayo","FHCRC"])]
-        test_data = data[data['sample_sources']=="UAB"]
+        cv_data = data[data['Sample Source'].isin(["Mayo","FHCRC"])]['slide_id']
+        test_data = data[data['Sample Source']=="UAB"]['slide_id']
 
     # Create a KFold object for 5 folds
     kf = KFold(n_splits=5, shuffle=True, random_state=42)
@@ -160,18 +172,44 @@ def save_splits(main_df,task_type,tumor_location):
     print("Split files created successfully.")
 
 
+
+def check_duplicate_columns(df):
+    duplicate_columns = df.columns[df.columns.duplicated()]
+    return duplicate_columns
+    
+def remove_duplicate_columns(df):
+    return df.loc[:, ~df.columns.duplicated()]
+
 def join_all_data(TCGA_table,HGSOC_table):
     """Join both data sources into one main dataframe where all experiments can be run from"""
     # Join based on overlapping proteins and metadata column names.
-    common_columns = HGSOC_table.columns.intersection(TCGA_table.columns)
+
+    TCGA_table = remove_duplicate_columns(TCGA_table)
+    common_columns = sorted(HGSOC_table.columns.intersection(TCGA_table.columns))
+
+    print(TCGA_table["Sample Source"])
+    print(HGSOC_table["Sample Source"])
+
     # Select only common columns from both dataframes
-    HGSCO_intersection = HGSOC_table[common_columns]
+    HGSOC_intersection = HGSOC_table[common_columns]
     TCGA_intersection = TCGA_table[common_columns]
-    # Concatenate the rows
-    combined_df = pd.concat([HGSCO_intersection, TCGA_intersection], ignore_index=True)
+    # Use the function on your DataFrame
+    duplicate_columns = check_duplicate_columns(TCGA_table)
 
+    if len(duplicate_columns) > 0:
+        print("Duplicate columns found:", duplicate_columns.tolist())
+    else:
+        print("No duplicate columns found.")
+
+    assert HGSOC_intersection.columns.to_list() == TCGA_intersection.columns.to_list()
+    combined_df = pd.concat([HGSOC_intersection, TCGA_intersection], ignore_index=True)
+
+    print(combined_df["Sample Source"].value_counts())
+    print(combined_df["Patient Age"].value_counts())
+    print(combined_df["Proteomic subtype"].value_counts())
+    print(combined_df['Tumor type'].value_counts())
+    
     return combined_df
-
 
 
 
@@ -184,10 +222,10 @@ if __name__ == "__main__":
     HGSOC_table = clean_HGSOC()
     print("Merging all data")
     main_df = join_all_data(TCGA_table,HGSOC_table)
-    main_df.to_csv("/HGSOC_TCGA_main.csv",index=None)
+    main_df.to_csv("HGSOC_TCGA_main.csv",index=None)
     print("creating splits")
     ###### Create splits ######
-    for tumor_location in ["primary","metastatic"]:
+    for tumor_location in ["Primary","Metastatic"]:
         # Split: 1: TCGA test HGSOC train
         save_splits(main_df,"TCGA_train_HGSOC_test",tumor_location)
         # Split: 2: HGSOC train TCGA test

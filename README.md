@@ -1,4 +1,4 @@
-# Ovarian WSI workshop. 
+# Multimodal High-Grade Serous Ovarian Cancer platinum response prediction
 
 #### This repo contains full code for:
 
@@ -7,25 +7,7 @@
 
 ## Setup
 
-### Cloning this repository
-
-With out customized (slightly) CLAM module, in order to properly init this repo, you should run:
-
-```
-git clone --recurse-submodules https://github.com/csabaibio/BRCA.git
-```
-
-This will recusrsively download CLAM into your directory.
-
-### Install depedencies
-
-```
-poetry shell
-cd topk/
-poetry run python -m build
-cd ..
-poetry install
-```
+yaml provided
 
 # 1. Self supervised learning pre-training
 
@@ -51,30 +33,15 @@ poetry install
 
 TODO Add: tar script and dino instructions here:
 
-# 2. Downstream tasks 
-
-1. BRCA vs WT prediction.
-2. Platinum treatment survival prediction.
-3. HD-detect classification.
-4. BRCA vs Queiscent descision boundry learning for classifying "unknown" Intact cases
-
-## Generating the tasks.
-
-TODO: fully organise Scripts to generate tasks.
 
 
-## Results Organised here:
-https://docs.google.com/spreadsheets/d/1IBodksS7xHwYTG3GIFfsCSejoapck7ep0UpAsKAbNMI/edit?usp=sharing
+## Cleaning all data and creation of splits.
 
-## Create splits.
-
-```./create_splits.sh```
-
-## Running models.
+## Running classical omics only models.
 
 ```./train.sh```
 
-## Evaluating test sets. 
+## Running clam_sb and Multimodal models.
 
 
 ## Plotting results.
@@ -82,3 +49,5 @@ https://docs.google.com/spreadsheets/d/1IBodksS7xHwYTG3GIFfsCSejoapck7ep0UpAsKAb
 ```notebooks/results_analysis/```
 
 ## Heatmap generation. 
+
+
