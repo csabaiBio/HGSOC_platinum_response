@@ -2,7 +2,7 @@
 
 ##### Oz Kilim, Alex Olar, András Biricz, Péter Pollner, Zsofia Sztupinszki, Zoltán Szállási, István Csabai
 
-![](./figures/fig_1_HGSOC.png)
+![main](./figures/fig_1_HGSOC.png)
 
 #### This repo contains full code for:
 
