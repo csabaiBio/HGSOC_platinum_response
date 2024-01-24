@@ -1,15 +1,37 @@
 # Multimodal High-Grade Serous Ovarian Cancer platinum response prediction
 
+##### Oz Kilim, Alex Olar, András Biricz, Péter Pollner, Zsofia Sztupinszki, Zoltán Szállási, István Csabai
+
+![](figures/fig_1_HGSOC.png)
+
 #### This repo contains full code for:
 
-1. SSL of large scale opensource Ovarian Histopathology WSIs.
-2. Downstream training of various Ovarian cancer-related tasks of interest.
+1. Pre-processing and all experiments for the paper: "Histo-proteo multimodal deep learning for High-Grade Serous Ovarian Cancer platinum response prediction"
+2. SSL of large scale opensource Ovarian Histopathology WSIs.
 
-## Setup
+## 1. Download, data cleaning cleaning and creation of splits.
 
-yaml provided
+```python3 HGSOC_platinum_responce/HGSOC_TCGA_tasks_data_setup.py```
 
-# 1. Self supervised learning pre-training
+## 2. Running classical Proteomics only models.
+
+```python3 HGSOC_platinum_responce/classical_models_omics.py```
+
+## 3. Running WSI and Multimodal models.
+
+```TCGA_train_HGSOC_test.sh```
+
+## 4. Plotting results.
+
+```notebooks/results_analysis/TCGA_HGSOC_results.ipynb```
+
+## 5. Heatmap generation. 
+
+```./heatmap.sh```
+
+```notebooks/interpretability/vis_multi_heatmaps.ipynb```
+
+# 6. Self supervised learning pre-training
 
 ## Collated data for SSL
 
@@ -25,29 +47,4 @@ yaml provided
 ### Generate h5 files for all ovarian slides avalalble at correct magnifications. 
 
 ```./bulk_ovarian_patching.sh```
-
-#### Function of this script: 
-
-- Patching of bulk data.
-- Saving patch images to h5 files.
-
-TODO Add: tar script and dino instructions here:
-
-
-
-## Cleaning all data and creation of splits.
-
-## Running classical omics only models.
-
-```./train.sh```
-
-## Running clam_sb and Multimodal models.
-
-
-## Plotting results.
-
-```notebooks/results_analysis/```
-
-## Heatmap generation. 
-
 
