@@ -16,3 +16,6 @@ TransPath/
 notebooks/beta_VAE_augmentor/
 notebooks/BRCA_exploration/figures/
 openslide-python/examples/
+Set-Tree/
+bash_scripts/
+openslide_python/

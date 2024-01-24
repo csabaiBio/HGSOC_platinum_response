@@ -1,6 +1,6 @@
 # Multimodal High-Grade Serous Ovarian Cancer platinum response prediction
 
-##### Oz Kilim, Alex Olar, András Biricz, Péter Pollner, Zsofia Sztupinszki, Zoltán Szállási, István Csabai
+#### Oz Kilim, Alex Olar, András Biricz, Péter Pollner, Zsofia Sztupinszki, Zoltán Szállási, István Csabai
 
 ![main](./figures/fig_1_HGSOC.png)
 
