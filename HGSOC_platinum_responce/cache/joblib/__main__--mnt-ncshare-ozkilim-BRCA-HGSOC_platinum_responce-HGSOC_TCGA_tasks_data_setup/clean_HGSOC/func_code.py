@@ -3,9 +3,9 @@
 def clean_HGSOC():
     """Take clinical and protemic data tables from Chowrdy et.al and organise into form for training and testing."""
     # From Chowdry.et.al: 
-    gloabal_prot = pd.read_csv("/mnt/ncshare/ozkilim/BRCA/data/HGSOC_processed_data/FFPE_discovery_globalprotein_imputed.tsv",delimiter='\t')
+    gloabal_prot = pd.read_csv("../data/HGSOC_processed_data/FFPE_discovery_globalprotein_imputed.tsv",delimiter='\t')
     #from TCIA archive: 
-    clinical = pd.read_excel("/mnt/ncshare/ozkilim/BRCA/data/HGSOC_processed_data/PTRC-HGSOC_List_clincal_data.xlsx")
+    clinical = pd.read_excel("../data/HGSOC_processed_data/PTRC-HGSOC_List_clincal_data.xlsx")
     gloabal_prot_t = gloabal_prot.T
     # drop middle rows .... make header the prot name... 
     gloabal_prot_t.columns = gloabal_prot_t.iloc[1]

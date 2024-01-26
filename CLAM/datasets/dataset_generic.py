@@ -4,6 +4,7 @@ import torch
 import numpy as np
 import pandas as pd
 from scipy import stats
+import json
 
 from torch.utils.data import Dataset
 import h5py
@@ -369,11 +370,14 @@ class Generic_MIL_Dataset(Generic_WSI_Classification_Dataset):
 		# Load patho feats.
 		patho_features = self.load_patho_features(data_dir, slide_id) 
 
-		if self.omics_structure == "concat":
+		with open('HGSOC_platinum_responce/proteomics_combinations.json', 'r') as file:
+			protein_sets = json.load(file)
+		
+
+		if self.omics_structure == "concat_60":
 			### Load the omics features as a vector for a fusion model.
-			# genomic_features = ["Signature.1","Signature.2","Signature.3","Signature.5","Signature.8","Signature.13","Microhomology2","Microhomology2ratio","Del/ins-ratio","Del10-ratio","HRD-LOH","Telomeric.AI","LST","DBS2","DBS4","DBS5","DBS6","DBS9","SBS1","SBS2","SBS3","SBS5","SBS8","SBS13","SBS18","SBS26","SBS35","SBS38","SBS39","SBS40","SBS41","ID1","ID2","ID4","ID8"]
-			genomic_features_60 = ['RAB25', 'BCL2L1', 'HADH', 'NFKB2', 'COX7A2', 'COX7C', 'TPMT', 'GOLPH3L', 'LTA4H', 'COX6C', 'IDH1', 'YWHAG', 'S100A10', 'COX6A1', 'NDUFB3', 'TGM2', 'CDKN1B', 'NFKB1', 'CAMK2D', 'IL4I1', 'FDX1', 'VCAM1', 'ATM', 'NCAPH2', 'ABCB8', 'IDI1', 'PLIN2', 'ATP6V1D', 'GPX4', 'CA2', 'RELA', 'GLUD1', 'TOP3B', 'RPS6KB2', 'KEAP1', 'LGALS1', 'MTDH', 'AIFM1', 'RHOA', 'CASP7', 'PTGES2', 'TFRC', 'CHUK', 'GPX1', 'PDK1', 'STAT3', 'PECR', 'TALDO1', 'XIAP', 'ACADSB', 'CPOX', 'ARNT', 'BIRC2', 'ACOT7', 'HACL1', 'MYD88', 'EGFR', 'RIPK1', 'NBN', 'LDHA']
-			
+			# genomic_features = ["Signature.1","Signature.2","Signature.3","Signature.5","Signature.8","Signature.13","Microhomology2","Microhomology2ratio","Del/ins-ratio","Del10-ratio","HRD-LOH","Telomeric.AI","LST","DBS2","DBS4","DBS5","DBS6","DBS9","SBS1","SBS2","SBS3","SBS5","SBS8","SBS13","SBS18","SBS26","SBS35","SBS38","SBS39","SBS40","SBS41","ID1","ID2","ID4","ID8"]		
+			genomic_features_60 = protein_sets['chowdery_60_flat']
 			# genomic_features = ['ABCB8', 'ACADSB', 'ACOT7', 'AIFM1', 'ARNT', 'ATM',
 			# 'ATP6V1D', 'BCL2L1', 'BIRC2', 'CA2', 'CAMK2D', 'CARMIL1', 'CASP7',
 			# 'CCDC167', 'CDKN1A', 'CDKN1B', 'CHUK', 'COX6A1', 'COX6C', 'COX7A2',
@@ -383,18 +387,20 @@ class Generic_MIL_Dataset(Generic_WSI_Classification_Dataset):
 			# 'PDK1', 'PECR', 'PLIN2', 'PTGES2', 'RAB25', 'RELA', 'RHOA', 'RIPK1',
 			# 'RPS6KB2', 'S100A10', 'SENP1', 'STAT3', 'TALDO1', 'TFRC', 'TGM2',
 			# 'TOP3B', 'TPMT', 'VCAM1', 'XIAP', 'YWHAG']
-			
 			# phospo_prots = pd.read_excel("/mnt/ncshare/ozkilim/BRCA/data/HGSOC_processed_data/mmc3.xlsx",sheet_name="Phospho_predictors")
 			# phospho_features = phospo_prots["Phospho predictors"].to_list()
 			# genomic_features.extend(phospho_features)
 
 			row_data = self.slide_data.loc[idx, genomic_features_60].astype(float)
-
-			# row_data = self.slide_data.iloc[idx, 0:8800].astype(float)
-			# Convert to PyTorch tensor
 			omics_features = torch.tensor(row_data.values, dtype=torch.float32) 
 
-		elif self.omics_structure == "chowdry_clusters":
+		elif self.omics_structure == "concat_1k":
+			### Load the omics features as a vector for a fusion model.
+			genomic_features_60 = protein_sets['TCGA_flat_1k']
+			row_data = self.slide_data.loc[idx, genomic_features_60].astype(float)
+			omics_features = torch.tensor(row_data.values, dtype=torch.float32) 
+
+		elif self.omics_structure == "chowdry_clusters_phospho":
 
 			# self.groupings = pd.read_csv("/mnt/ncshare/ozkilim/BRCA/data/HGSOC_processed_data/protien_GO_groupings.csv") #why not in init?....
 			omics_features=[]
@@ -436,22 +442,8 @@ class Generic_MIL_Dataset(Generic_WSI_Classification_Dataset):
 
 			omics_features=[]
 
-			protein_categories = {
-				"Drug Metabolism & Biological Oxidation": ["TPMT"],
-				"Metabolic": [ "TALDO1",'CA2', "COX7A2", "LGALS1", "S100A10", "ACADSB", "COX6C", "COX7C", 
-					"GPX1", "GPX4", "LDHA", "NDUFB3", "ATP6V1D", "ACOT7", "HACL1", 
-					"CPOX", "PTGES2", "GLUD1", "COX6A1", "LTA4H", "CASP7", "IL4I1" , "PECR",
-					"YWHAG", "IDI1", "AIFM1", "NBN", "HADH", "PLIN2", "FDX1", "NCAPH2", "IDH1", "ABCB8"
-				],
-				"Hypoxia": [
-					"TGM2", "RAB25", "CDKN1B", "EGFR" , "RHOA", "NFKB1", 
-					"PDK1", "RPS6KB2", "TFRC", "STAT3", "ARNT", "CAMK2D"
-				],
-				"NF-kB": [
-					"RELA", "ATM", "BCL2L1", "BIRC2", "VCAM1", "NFKB2", "KEAP1", "RIPK1", "MTDH",
-					"CHUK", "MYD88", "GOLPH3L", "TOP3B", "XIAP"
-				]
-			}
+			protein_categories = protein_sets['chowdery_60_grouped']
+
 
 			# Create list of vectors for MCAT. 
 			for selected_prots in protein_categories.values():
@@ -478,6 +470,22 @@ class Generic_MIL_Dataset(Generic_WSI_Classification_Dataset):
 			
 			# print("omics shape")
 			# print([i.shape[0] for i in omics_features])
+				
+		elif self.omics_structure == "TCGA_grouped_1k":
+			
+			omics_features=[]
+			protein_categories = protein_sets['TCGA_grouped_1k']
+			
+			# Create list of vectors multimodal models. 
+			for selected_prots in protein_categories.values():
+				sub_df = self.slide_data[selected_prots]
+				row_data = sub_df.loc[idx,:].astype(float) # get row for protien group
+				row_data = torch.tensor(row_data.values, dtype=torch.float32) 
+				omics_features.append(row_data) 
+
+			# print("omics shape")
+			# print([i.shape[0] for i in omics_features])
+		
 
 		else: 
 	

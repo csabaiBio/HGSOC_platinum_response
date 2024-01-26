@@ -4,12 +4,13 @@ import argparse
 import numpy as np
 
 def setup_task(args):
-    if args.task == 'HGSOC_multimodal':
+    if args.task == 'HGSOC_platinum_response_prediction':
         args.n_classes=2
         dataset = Generic_MIL_Dataset(
-                    csv_path = '/mnt/ncshare/ozkilim/BRCA/data/tasks/HGSOC_multimodal_protein_and_phospho.csv',    
+                    csv_path = 'HGSOC_platinum_responce/HGSOC_TCGA_main.csv',    
                     data_dir=args.embeddings_path,    
                     omics_structure=args.omics_structure,
+                    embed_dim=args.embed_dim,
                     shuffle = False, 
                     seed = args.seed, 
                     print_info = True,

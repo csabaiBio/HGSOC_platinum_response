@@ -320,7 +320,8 @@ class PorpoiseMMF(nn.Module):
         self.size_dict_path = {"small": [embed_dim, 512, 256], "big": [1024, 512, 384]}
         self.size_dict_omic = {'small': [256, 256]} #why is this 2d?
         self.n_classes = n_classes
-        self.omic_input_dim = 584
+        print(omic_sizes[0])
+        self.omic_input_dim = omic_sizes[0] #needs to be dynamic...
 
         ### Deep Sets Architecture Construction
         size = self.size_dict_path[size_arg]

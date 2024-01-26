@@ -31,7 +31,7 @@ def custom_join(df1, df2, column1, column2):
 @memory.cache
 def clean_TCGA(TCGA_OV_slides_folder_path):
     """Take clinical and protemic data tables from Zhang et.al and organise into form for training and testing."""
-    df_ov_clinical = pd.read_excel("/mnt/ncshare/ozkilim/BRCA/data/HGSOC_Zhang_TCGA_CPTAC_OV/mmc2.xlsx")
+    df_ov_clinical = pd.read_excel("../data/HGSOC_Zhang_TCGA_CPTAC_OV/mmc2.xlsx")
     # select tumors with set of stages
     selected_stages= ["IIIA","IIIB","IIIC","IV"]
     df_ov_clinical = df_ov_clinical[df_ov_clinical["tumor_stage"].isin(selected_stages)]
@@ -40,7 +40,7 @@ def clean_TCGA(TCGA_OV_slides_folder_path):
     # remove not avalable... 
     df_ov_clinical['label'] = df_ov_clinical['PlatinumStatus'].map({'Sensitive': 1, 'Resistant': 0})
     # Load proteomics data:
-    tcga_proteomic = pd.read_excel("/mnt/ncshare/ozkilim/BRCA/data/HGSOC_Zhang_TCGA_CPTAC_OV/mmc3-2.xlsx")
+    tcga_proteomic = pd.read_excel("../data/HGSOC_Zhang_TCGA_CPTAC_OV/mmc3-2.xlsx")
     tcga_prots = tcga_proteomic["hgnc_symbol"].to_list()
     # transopose and organise 
     tcga_proteomic_t = tcga_proteomic.T
@@ -81,9 +81,9 @@ def clean_TCGA(TCGA_OV_slides_folder_path):
 def clean_HGSOC():
     """Take clinical and protemic data tables from Chowrdy et.al and organise into form for training and testing."""
     # From Chowdry.et.al: 
-    gloabal_prot = pd.read_csv("/mnt/ncshare/ozkilim/BRCA/data/HGSOC_processed_data/FFPE_discovery_globalprotein_imputed.tsv",delimiter='\t')
+    gloabal_prot = pd.read_csv("../data/HGSOC_processed_data/FFPE_discovery_globalprotein_imputed.tsv",delimiter='\t')
     #from TCIA archive: 
-    clinical = pd.read_excel("/mnt/ncshare/ozkilim/BRCA/data/HGSOC_processed_data/PTRC-HGSOC_List_clincal_data.xlsx")
+    clinical = pd.read_excel("../data/HGSOC_processed_data/PTRC-HGSOC_List_clincal_data.xlsx")
     gloabal_prot_t = gloabal_prot.T
     # drop middle rows .... make header the prot name... 
     gloabal_prot_t.columns = gloabal_prot_t.iloc[1]
@@ -119,24 +119,26 @@ def save_splits(main_df,task_type,tumor_location):
     """Given a task type create spl;its to be used for experiments."""
     # Focus on the 'Sample source' and 'slide_id' columns
     data = main_df[['Sample Source', 'slide_id','Tumor type']]
-    #split by tumor location . 
-    data = data[data["Tumor type"]==tumor_location]
     # Get unique sample sources
     # sample_sources = data['Sample Source'].unique()
 
     if task_type =="TCGA_train_HGSOC_test":
         cv_data = data[data['Sample Source']=="TCGA"]['slide_id']
+        data = data[data["Tumor type"]==tumor_location]
         test_data = data[data['Sample Source']!="TCGA"]['slide_id']
 
     elif task_type =="HGSOC_train_TCGA_test":
-        cv_data = data[data['Sample Source']!="TCGA"]['slide_id']
         test_data = data[data['Sample Source']=="TCGA"]['slide_id'] 
+        data = data[data["Tumor type"]==tumor_location]
+        cv_data = data[data['Sample Source']!="TCGA"]['slide_id']
 
     elif task_type =="HGSOC_MAYO_hold_out":
+        data = data[data["Tumor type"]==tumor_location]
         cv_data = data[data['Sample Source'].isin(["UAB","FHCRC"])]['slide_id']
         test_data = data[data['Sample Source']=="Mayo"]['slide_id']
     
     elif task_type =="HGSOC_UAB_hold_out":
+        data = data[data["Tumor type"]==tumor_location]
         cv_data = data[data['Sample Source'].isin(["Mayo","FHCRC"])]['slide_id']
         test_data = data[data['Sample Source']=="UAB"]['slide_id']
 

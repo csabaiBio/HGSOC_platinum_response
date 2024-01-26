@@ -17,9 +17,48 @@
 
 ```python3 HGSOC_platinum_responce/classical_models_omics.py```
 
-## 3. Running WSI and Multimodal models.
+## 3. Patching and embedding data
 
-```TCGA_train_HGSOC_test.sh```
+```setup_general.sh```
+
+
+Or follow the instructions outlined in https://github.com/mahmoodlab/CLAM to create embeddings for models. Embeddings created should be in the form to follow our analysis with the embedders used:
+
+```bash
+CTransPath/
+    ├── h5_files
+            ├── slide_1.h5
+            ├── slide_2.h5
+            └── ...
+    └── pt_files
+            ├── slide_1.pt
+            ├── slide_2.pt
+            └── ...
+Lunit-Dino/
+    ├── h5_files
+            ├── slide_1.h5
+            ├── slide_2.h5
+            └── ...
+    └── pt_files
+            ├── slide_1.pt
+            ├── slide_2.pt
+            └── ...
+OV-Dino/
+    ├── h5_files
+            ├── slide_1.h5
+            ├── slide_2.h5
+            └── ...
+    └── pt_files
+            ├── slide_1.pt
+            ├── slide_2.pt
+            └── ...
+```
+
+## 4. Running WSI and Multimodal models. This will run parts 1 2 and 3. 
+
+#### Ensure all paths are pointing to the correct directories where the generated embeddings exist.
+
+```run.sh```
 
 ## 4. Plotting results.
 

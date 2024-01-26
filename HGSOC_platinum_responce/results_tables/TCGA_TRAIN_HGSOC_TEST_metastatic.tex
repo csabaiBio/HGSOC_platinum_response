@@ -1,0 +1,27 @@
+\begin{table}[ht]
+\centering
+\begin{tabular}{cc|ccc}
+\toprule
+ & \multicolumn{1}{c}{Model} & \multicolumn{3}{c}{TCGA train HGSOC testmetastatic} \\
+\midrule
+ &  & CTransPath \cite{wang2022transformer} & Lunit-Dino \cite{kang2023benchmarking} & OV-Dino (ours) \\
+\midrule
+\multirow{6}{*}{\rotatebox[origin=c]{90}{Multimodal}} 
+ & MCAT 1k \cite{lu2021data} & 0.51±0.081 & 0.539±0.034 & 0.589±0.026 \\
+ & MCAT 60 \cite{lu2021data} & 0.555±0.055 & 0.532±0.038 & 0.555±0.049 \\
+ & PorpoiseMMF 1k \cite{lu2021data} & 0.691±0.03 & 0.718±0.014 & 0.733±0.008 \\
+ & PorpoiseMMF 60 \cite{lu2021data} & 0.686±0.043 & 0.504±0.025 & 0.537±0.038 \\
+ & SurvPath 1k \cite{lu2021data} & 0.662±0.017 & 0.62±0.027 & 0.672±0.026 \\
+ & SurvPath 60 \cite{lu2021data} & 0.627±0.022 & 0.622±0.025 & 0.627±0.019 \\
+\midrule
+\multirow{2}{*}{\rotatebox[origin=c]{90}{Omics}} 
+ & 1k protein ensemble & nan & nan & 0.669±0.016 \\
+ & 60 protein ensemble \cite{chowdhury2023proteogenomic} & nan & nan & 0.669±0.016 \\
+\midrule
+\multirow{1}{*}{\rotatebox[origin=c]{90}{WSI}} 
+ & clam\_sb \cite{lu2021data} & 0.413±0.025 & 0.457±0.027 & 0.443±0.01 \\
+\midrule
+\bottomrule
+\end{tabular}
+\caption{TCGA train HGSOC testmetastatic}
+\end{table}

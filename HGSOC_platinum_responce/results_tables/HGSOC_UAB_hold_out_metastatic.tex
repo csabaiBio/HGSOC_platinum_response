@@ -1,0 +1,27 @@
+\begin{table}[ht]
+\centering
+\begin{tabular}{cc|ccc}
+\toprule
+ & \multicolumn{1}{c}{Model} & \multicolumn{3}{c}{HGSOC_UAB_hold_outmetastatic} \\
+\midrule
+ &  & CTransPath \cite{wang2022transformer} & Lunit-Dino \cite{kang2023benchmarking} & OV-Dino (ours) \\
+\midrule
+\multirow{6}{*}{\rotatebox[origin=c]{90}{Multimodal}} 
+ & MCAT 1k \cite{lu2021data} & 0.694±0.088 & 0.67±0.08 & 0.534±0.062 \\
+ & MCAT 60 \cite{lu2021data} & 0.753±0.052 & 0.558±0.046 & 0.651±0.026 \\
+ & PorpoiseMMF 1k \cite{lu2021data} & 0.598±0.042 & 0.602±0.047 & 0.649±0.022 \\
+ & PorpoiseMMF 60 \cite{lu2021data} & 0.763±0.037 & 0.662±0.052 & 0.705±0.034 \\
+ & SurvPath 1k \cite{lu2021data} & 0.574±0.046 & 0.554±0.034 & 0.614±0.039 \\
+ & SurvPath 60 \cite{lu2021data} & 0.821±0.051 & 0.813±0.07 & 0.774±0.036 \\
+\midrule
+\multirow{2}{*}{\rotatebox[origin=c]{90}{Omics}} 
+ & 1k protein ensemble & nan & nan & 0.512±0.068 \\
+ & 60 protein ensemble \cite{chowdhury2023proteogenomic} & nan & nan & 0.512±0.068 \\
+\midrule
+\multirow{1}{*}{\rotatebox[origin=c]{90}{WSI}} 
+ & clam\_sb \cite{lu2021data} & 0.543±0.062 & 0.65±0.048 & 0.704±0.03 \\
+\midrule
+\bottomrule
+\end{tabular}
+\caption{HGSOC_UAB_hold_outmetastatic}
+\end{table}
