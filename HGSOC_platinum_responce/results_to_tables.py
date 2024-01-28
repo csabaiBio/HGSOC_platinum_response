@@ -7,6 +7,7 @@ import pandas as pd
 from scipy import stats
 import json
 from sklearn.metrics import roc_auc_score
+import re
 
 
 def test_auc(tf_path):
@@ -128,30 +129,68 @@ def format_highest_values(df):
         df[col] = df[col].apply(lambda x: f'\\textbf{{{x}}}' if x == highest_value else x)
     return df
 
-# Function to generate LaTeX table
-def generate_latex_table(df_pivot,header,caption):
+
+
+def parse_value(value):
+    # Function to parse the numerical part before '±'
+    if pd.notna(value):
+        match = re.search(r"(\d+\.\d+)(?=±)", value)
+        if match:
+            return float(match.group(1))
+    return np.nan
+
+
+
+def generate_latex_table(df_pivot, header, caption):
+    # Create a DataFrame to store the parsed numeric values
+    df_numeric = pd.DataFrame()
+
+    # Apply parsing to each relevant column (considering columns from index 2 onwards)
+    data_columns = df_pivot.columns[2:]
+    for col in data_columns:
+        df_numeric[col] = df_pivot[col].apply(parse_value)
+
+    # Identify the largest and second largest value in each numeric column
+    max_values = df_numeric.max()
+    second_max_values = df_numeric.apply(lambda x: x.nlargest(2).iloc[-1] if x.nlargest(2).size > 1 else np.nan)
+
     # Start the table and add the header
-    latex_str = "\\begin{table}[ht]\n\\centering\n\\begin{tabular}{cc|ccc}\n\\toprule\n"
-    latex_str += " & \\multicolumn{1}{c}{Model} & \\multicolumn{3}{c}{"+header+"} \\\\\n"
+    latex_str = "\\begin{table}[ht]\n\\footnotesize\n\\centering\n\\begin{tabular}{cc|ccc|ccc}\n\\toprule\n"
+    latex_str += " & \\multicolumn{1}{c}{" + header + "} & \\multicolumn{3}{c}{Primary} & \\multicolumn{3}{c}{Metastatic} \\\\\n"
     latex_str += "\\midrule\n"
-    latex_str += " &  & CTransPath \cite{wang2022transformer} & Lunit-Dino \cite{kang2023benchmarking} & OV-Dino (ours) \\\\\n"
+    latex_str += " & Model & CTransPath \\cite{wang2022transformer} & Lunit-Dino \\cite{kang2023benchmarking} & OV-Dino (ours) & CTransPath & Lunit-Dino & OV-Dino \\\\\n"
     latex_str += "\\midrule\n"
 
     # Add rows from the DataFrame
     for category, group_df in df_pivot.groupby('category'):
         group_len = len(group_df)
-        latex_str += f"\\multirow{{{group_len}}}{{*}}{{\\rotatebox[origin=c]{{90}}{{{category}}}}} \n"
+        latex_str += f"\\multirow{{{group_len}}}{{*}}{{\\rotatebox[origin=c]{{90}}{{\\tiny {category}}}}} \n"
         for _, row in group_df.iterrows():
             model = row['model']
-            values = ' & '.join(str(x) for x in row[2:])
-            latex_str += f" & {model} & {values} \\\\\n"
+            values = []
+            for col in data_columns:
+                value = row[col]
+                # Check if the value is the maximum or second maximum in its column
+                if df_numeric.at[_, col] == max_values[col]:
+                    value = f"\\textbf{{{value}}}"
+                elif df_numeric.at[_, col] == second_max_values[col]:
+                    value = f"\\underline{{{value}}}"
+                values.append(value)
+            values_str = ' & '.join([str(model)] + values)
+            latex_str += f" & {values_str} \\\\\n"
         latex_str += "\\midrule\n"
 
-    latex_str += "\\bottomrule\n\\end{tabular}\n\\caption{"+caption+"}\n\\end{table}"
+    latex_str += "\\bottomrule\n\\end{tabular}\n\\vspace{6pt}\n\\caption{" + caption + "}\n\\end{table}"
 
     return latex_str
 
 
+def find_value(s):
+    if pd.notna(s):
+        match = re.search(r'\b\d+\.?\d*±\d+\.?\d*\b', s)
+        if match:
+            return match.group(0)
+    return np.nan
 
 ######## main #########
 
@@ -161,75 +200,126 @@ with open('classical_results.json', 'r') as json_file:
 
 
 # Part 1. HGSOC train TCGA test
-tissue_type = "metastatic"
-# factorize to load all tables from runs.. more automated less room for bugs... 
-results_dict = [{"60 protein ensemble \cite{chowdhury2023proteogenomic}":[classical_results[0]['HGSOC_train_TCGA_test_Primary'],"Omics","ViT"]}, {"1k protein ensemble":[classical_results[1]['HGSOC_train_TCGA_test_Primary'],"Omics","ViT"]}]
-embeddings = ["ViT","OV_ViT","CTransPath"]
+dfs = []
+for tissue_type in ["primary","metastatic"]:
+    # factorize to load all tables from runs.. more automated less room for bugs... 
+    results_dict = [{"60 protein ensemble \cite{chowdhury2023proteogenomic}":[classical_results[0]['HGSOC_train_TCGA_test_' + tissue_type.capitalize()],"Omics","ViT"]}, {"1k protein ensemble":[classical_results[1]['HGSOC_train_TCGA_test_' + tissue_type.capitalize()],"Omics","ViT"]}]
+    embeddings = ["ViT","OV_ViT","CTransPath"]
 
-for embedding in embeddings: 
+    for embedding in embeddings: 
 
-    results_dict.append({"clam\_sb \cite{lu2021data}":["HGSOC_TRAIN_TCGA_15_clam_sb_None_"+embedding+"_"+tissue_type+"_s1","WSI",embedding]})
+        results_dict.append({"clam\_sb \cite{lu2021data}":["HGSOC_TRAIN_TCGA_15_clam_sb_None_"+embedding+"_"+tissue_type+"_s1","WSI",embedding]})
 
-    results_dict.append({"PorpoiseMMF 60 \cite{lu2021data}":["HGSOC_TRAIN_TCGA_15_PorpoiseMMF_concat_60_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-    results_dict.append({"PorpoiseMMF 1k \cite{lu2021data}":["HGSOC_TRAIN_TCGA_15_PorpoiseMMF_concat_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"PorpoiseMMF 60 \cite{chen2022pan}":["HGSOC_TRAIN_TCGA_15_PorpoiseMMF_concat_60_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"PorpoiseMMF 1k \cite{chen2022pan}":["HGSOC_TRAIN_TCGA_15_PorpoiseMMF_concat_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
-    results_dict.append({"MCAT 60 \cite{lu2021data}":["HGSOC_TRAIN_TCGA_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-    results_dict.append({"MCAT 1k \cite{lu2021data}":["HGSOC_TRAIN_TCGA_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT 60 \cite{chen2021multimodal}":["HGSOC_TRAIN_TCGA_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT 1k \cite{chen2021multimodal}":["HGSOC_TRAIN_TCGA_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
-    results_dict.append({"SurvPath 60 \cite{lu2021data}":["HGSOC_TRAIN_TCGA_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-    results_dict.append({"SurvPath 1k \cite{lu2021data}":["HGSOC_TRAIN_TCGA_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath 60 \cite{jaume2023modeling}":["HGSOC_TRAIN_TCGA_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath 1k \cite{jaume2023modeling}":["HGSOC_TRAIN_TCGA_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
-df = process_auc_files(results_dict)
-# print(df.head(20))
-# Pivot the DataFrame
-df_pivot = df.pivot_table(index=['model', 'category'], columns='embedder', values=['TCGA'], aggfunc='first').reset_index()
-df_pivot.columns = [' '.join(col).strip() for col in df_pivot.columns.values]
-print(df_pivot.head(20))
+    df = process_auc_files(results_dict)
+    # print(df.head(20))
+    # Pivot the DataFrame
+    df_pivot = df.pivot_table(index=['model', 'category'], columns='embedder', values=['TCGA'], aggfunc='first').reset_index()
+    df_pivot.columns = [' '.join(col).strip() for col in df_pivot.columns.values]
+    
+    # Populate nans for classical models...
+    for index, row in df_pivot.iterrows():
+        values = row.apply(find_value).dropna()
+        if not values.empty:
+            value_to_fill = values.values[0]
+            df_pivot.loc[index] = df_pivot.loc[index].fillna(value_to_fill)
+
+    dfs.append(df_pivot)
+
+
+# Merge the DataFrames
+merged_df = dfs[0].merge(dfs[1], on='model', suffixes=('_primary', '_metastatic'))
+# Rename the 'name' column after merging
+merged_df.drop(['category_primary'], axis=1, inplace=True)
+merged_df.rename(columns={'category_metastatic': 'category'}, inplace=True)
+# Get the column you want to move
+column_to_move = merged_df.pop('category')
+# Insert the column at the desired position (position 2)
+merged_df.insert(1, 'category', column_to_move)
+print(merged_df.head())
+
 # Generate LaTeX table
-header = "HGSOC train TCGA test" + tissue_type
-caption = "HGSOC train TCGA test" + tissue_type
-latex_table = generate_latex_table(df_pivot,header,caption)
+header = "HGSOC train TCGA test"
+caption = "Testing on TCGA samples \cite{cancer2011integrated} AUC scores. All primary tumor samples from the discovery dataset are used for training. Bold values are the highest scores for a given feature extractor and architecture. Underlined are the second-highest scores."
+
+latex_table = generate_latex_table(merged_df,header,caption)
 # save table to tex file with header name of part/experiment
 print(latex_table)
+# find way to combine primary and metrastatics to one df ... for saving in full... 
 
-with open("results_tables/HGSOC_TRAIN_TCGA_TEST_"+tissue_type+".tex", 'w') as f:
+with open("results_tables/HGSOC_TRAIN_TCGA_TEST.tex", 'w') as f:
     f.write(latex_table)
+
 
 
 
 
 # Part 2. TCGA train HGSOC test
 # factorize to load all tables from runs.. more automated less room for bugs... 
-results_dict = [{"60 protein ensemble \cite{chowdhury2023proteogenomic}":[classical_results[0]['TCGA_train_HGSOC_test_Primary'],"Omics","ViT"]},{"1k protein ensemble":[classical_results[1]['TCGA_train_HGSOC_test_Primary'],"Omics","ViT"]}]
-embeddings = ["ViT","OV_ViT","CTransPath"]
+dfs = []
+for tissue_type in ["primary","metastatic"]:
+    results_dict = [{"60 protein ensemble \cite{chowdhury2023proteogenomic}":[classical_results[0]['TCGA_train_HGSOC_test_' + tissue_type.capitalize()],"Omics","ViT"]},{"1k protein ensemble":[classical_results[1]['TCGA_train_HGSOC_test_' + tissue_type.capitalize()],"Omics","ViT"]}]
+    embeddings = ["ViT","OV_ViT","CTransPath"]
 
-for embedding in embeddings: 
+    for embedding in embeddings: 
 
-    results_dict.append({"clam\_sb \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_clam_sb_None_"+embedding+"_"+tissue_type+"_s1","WSI",embedding]})
+        results_dict.append({"clam\_sb \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_clam_sb_None_"+embedding+"_"+tissue_type+"_s1","WSI",embedding]})
 
-    results_dict.append({"PorpoiseMMF 60 \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_PorpoiseMMF_concat_60_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-    results_dict.append({"PorpoiseMMF 1k \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_PorpoiseMMF_concat_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"PorpoiseMMF 60 \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_PorpoiseMMF_concat_60_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"PorpoiseMMF 1k \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_PorpoiseMMF_concat_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
-    results_dict.append({"MCAT 60 \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-    results_dict.append({"MCAT 1k \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT 60 \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT 1k \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
-    results_dict.append({"SurvPath 60 \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-    results_dict.append({"SurvPath 1k \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath 60 \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath 1k \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
-df = process_auc_files(results_dict)
-# print(df.head(20))
-# Pivot the DataFrame
-df_pivot = df.pivot_table(index=['model', 'category'], columns='embedder', values=['TCGA'], aggfunc='first').reset_index()
-df_pivot.columns = [' '.join(col).strip() for col in df_pivot.columns.values]
-print(df_pivot.head(20))
+    df = process_auc_files(results_dict)
+    # print(df.head(20))
+    # Pivot the DataFrame
+    df_pivot = df.pivot_table(index=['model', 'category'], columns='embedder', values=['TCGA'], aggfunc='first').reset_index()
+    df_pivot.columns = [' '.join(col).strip() for col in df_pivot.columns.values]
+    print(df_pivot.head(20))
+
+    # Populate nans for classical models...
+    for index, row in df_pivot.iterrows():
+        values = row.apply(find_value).dropna()
+        if not values.empty:
+            value_to_fill = values.values[0]
+            df_pivot.loc[index] = df_pivot.loc[index].fillna(value_to_fill)
+
+    dfs.append(df_pivot)
+
+
+# Merge the DataFrames
+merged_df = dfs[0].merge(dfs[1], on='model', suffixes=('_primary', '_metastatic'))
+# Rename the 'name' column after merging
+merged_df.drop(['category_primary'], axis=1, inplace=True)
+merged_df.rename(columns={'category_metastatic': 'category'}, inplace=True)
+# Get the column you want to move
+column_to_move = merged_df.pop('category')
+# Insert the column at the desired position (position 2)
+merged_df.insert(1, 'category', column_to_move)
+print(merged_df.head())
+
 # Generate LaTeX table
-header = "TCGA train HGSOC test" + tissue_type
-caption = "TCGA train HGSOC test" + tissue_type
-latex_table = generate_latex_table(df_pivot,header,caption)
+header = "TCGA train HGSOC test"
+caption = "Testing on HGSOC samples AUC scores. All primary tumor samples from the discovery dataset are used for training. Bold values are the highest scores for a given feature extractor and architecture. Underlined are the second-highest scores."
+
+latex_table = generate_latex_table(merged_df,header,caption)
+
 # save table to tex file with header name of part/experiment
 print(latex_table)
 # save table
-with open("results_tables/TCGA_TRAIN_HGSOC_TEST_"+tissue_type+".tex", 'w') as f:
+with open("results_tables/TCGA_TRAIN_HGSOC_TEST_.tex", 'w') as f:
     f.write(latex_table)
 
 
@@ -237,65 +327,120 @@ with open("results_tables/TCGA_TRAIN_HGSOC_TEST_"+tissue_type+".tex", 'w') as f:
 
 # Part 3. HGSOC hospital hold out splits
 # factorize to load all tables from runs.. more automated less room for bugs... 
-results_dict = [{"60 protein ensemble \cite{chowdhury2023proteogenomic}":[classical_results[0]['HGSOC_UAB_hold_out_Primary'],"Omics","ViT"]},{"1k protein ensemble":[classical_results[1]['HGSOC_UAB_hold_out_Primary'],"Omics","ViT"]}]
-embeddings = ["ViT","OV_ViT","CTransPath"]
+    
+dfs = []
+for tissue_type in ["primary","metastatic"]:
 
-for embedding in embeddings: 
+    results_dict = [{"60 protein ensemble \cite{chowdhury2023proteogenomic}":[classical_results[0]['HGSOC_UAB_hold_out_' + tissue_type.capitalize()],"Omics","ViT"]},{"1k protein ensemble":[classical_results[1]['HGSOC_UAB_hold_out_' + tissue_type.capitalize()],"Omics","ViT"]}]
+    embeddings = ["ViT","OV_ViT","CTransPath"]
 
-    results_dict.append({"clam\_sb \cite{lu2021data}":["HGSOC_UAB_hold_out_15_clam_sb_None_"+embedding+"_"+tissue_type+"_s1","WSI",embedding]})
+    for embedding in embeddings: 
 
-    results_dict.append({"PorpoiseMMF 60 \cite{lu2021data}":["HGSOC_UAB_hold_out_15_PorpoiseMMF_concat_60_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-    results_dict.append({"PorpoiseMMF 1k \cite{lu2021data}":["HGSOC_UAB_hold_out_15_PorpoiseMMF_concat_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"clam\_sb \cite{lu2021data}":["HGSOC_UAB_hold_out_15_clam_sb_None_"+embedding+"_"+tissue_type+"_s1","WSI",embedding]})
 
-    results_dict.append({"MCAT 60 \cite{lu2021data}":["HGSOC_UAB_hold_out_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-    results_dict.append({"MCAT 1k \cite{lu2021data}":["HGSOC_UAB_hold_out_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"PorpoiseMMF 60 \cite{lu2021data}":["HGSOC_UAB_hold_out_15_PorpoiseMMF_concat_60_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"PorpoiseMMF 1k \cite{lu2021data}":["HGSOC_UAB_hold_out_15_PorpoiseMMF_concat_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
-    results_dict.append({"SurvPath 60 \cite{lu2021data}":["HGSOC_UAB_hold_out_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-    results_dict.append({"SurvPath 1k \cite{lu2021data}":["HGSOC_UAB_hold_out_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT 60 \cite{lu2021data}":["HGSOC_UAB_hold_out_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT 1k \cite{lu2021data}":["HGSOC_UAB_hold_out_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
-df = process_auc_files(results_dict)
-# print(df.head(20))
-# Pivot the DataFrame
-df_pivot = df.pivot_table(index=['model', 'category'], columns='embedder', values=['TCGA'], aggfunc='first').reset_index()
-df_pivot.columns = [' '.join(col).strip() for col in df_pivot.columns.values]
-print(df_pivot.head(20))
+        results_dict.append({"SurvPath 60 \cite{lu2021data}":["HGSOC_UAB_hold_out_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath 1k \cite{lu2021data}":["HGSOC_UAB_hold_out_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+
+    df = process_auc_files(results_dict)
+    # print(df.head(20))
+    # Pivot the DataFrame
+    df_pivot = df.pivot_table(index=['model', 'category'], columns='embedder', values=['TCGA'], aggfunc='first').reset_index()
+    df_pivot.columns = [' '.join(col).strip() for col in df_pivot.columns.values]
+    print(df_pivot.head(20))
+
+    for index, row in df_pivot.iterrows():
+        values = row.apply(find_value).dropna()
+        if not values.empty:
+            value_to_fill = values.values[0]
+            df_pivot.loc[index] = df_pivot.loc[index].fillna(value_to_fill)
+
+    dfs.append(df_pivot)
+
+
+# Merge the DataFrames
+merged_df = dfs[0].merge(dfs[1], on='model', suffixes=('_primary', '_metastatic'))
+# Rename the 'name' column after merging
+merged_df.drop(['category_primary'], axis=1, inplace=True)
+merged_df.rename(columns={'category_metastatic': 'category'}, inplace=True)
+# Get the column you want to move
+column_to_move = merged_df.pop('category')
+# Insert the column at the desired position (position 2)
+merged_df.insert(1, 'category', column_to_move)
+print(merged_df.head())
+
 # Generate LaTeX table
-header = "HGSOC_UAB_hold_out" + tissue_type
-caption = "HGSOC_UAB_hold_out" + tissue_type
-latex_table = generate_latex_table(df_pivot,header,caption)
+header = "HGSOC_UAB_hold_out"
+caption = "HGSOC_UAB_hold_out. Bold values are the highest scores for a given feature extractor and architecture. Underlined are the second-highest scores."
+
+latex_table = generate_latex_table(merged_df,header,caption)
+
 # save table to tex file with header name of part/experiment
 print(latex_table)
-with open("results_tables/HGSOC_UAB_hold_out_"+tissue_type+".tex", 'w') as f:
+with open("results_tables/HGSOC_UAB_hold_out.tex", 'w') as f:
     f.write(latex_table)
 
 
+
+
 # factorize to load all tables from runs.. more automated less room for bugs... 
-results_dict = [{"60 protein ensemble \cite{chowdhury2023proteogenomic}":[classical_results[0]['HGSOC_MAYO_hold_out_Primary'],"Omics","ViT"]}, {"1k protein ensemble":[classical_results[1]['HGSOC_MAYO_hold_out_Primary'],"Omics","ViT"]}]
-embeddings = ["ViT","OV_ViT","CTransPath"]
+dfs = []
+for tissue_type in ["primary","metastatic"]:
 
-for embedding in embeddings: 
+    results_dict = [{"60 protein ensemble \cite{chowdhury2023proteogenomic}":[classical_results[0]['HGSOC_MAYO_hold_out_' + tissue_type.capitalize()],"Omics","ViT"]}, {"1k protein ensemble":[classical_results[1]['HGSOC_MAYO_hold_out_' + tissue_type.capitalize()],"Omics","ViT"]}]
+    embeddings = ["ViT","OV_ViT","CTransPath"]
 
-    results_dict.append({"clam\_sb \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_clam_sb_None_"+embedding+"_"+tissue_type+"_s1","WSI",embedding]})
+    for embedding in embeddings: 
 
-    results_dict.append({"PorpoiseMMF 60 \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_PorpoiseMMF_concat_60_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-    results_dict.append({"PorpoiseMMF 1k \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_PorpoiseMMF_concat_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"clam\_sb \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_clam_sb_None_"+embedding+"_"+tissue_type+"_s1","WSI",embedding]})
 
-    results_dict.append({"MCAT 60 \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-    results_dict.append({"MCAT 1k \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"PorpoiseMMF 60 \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_PorpoiseMMF_concat_60_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"PorpoiseMMF 1k \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_PorpoiseMMF_concat_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
-    results_dict.append({"SurvPath 60 \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-    results_dict.append({"SurvPath 1k \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT 60 \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT 1k \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
-df = process_auc_files(results_dict)
-# print(df.head(20))
-# Pivot the DataFrame
-df_pivot = df.pivot_table(index=['model', 'category'], columns='embedder', values=['TCGA'], aggfunc='first').reset_index()
-df_pivot.columns = [' '.join(col).strip() for col in df_pivot.columns.values]
-print(df_pivot.head(20))
+        results_dict.append({"SurvPath 60 \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath 1k \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+
+    df = process_auc_files(results_dict)
+    # print(df.head(20))
+    # Pivot the DataFrame
+    df_pivot = df.pivot_table(index=['model', 'category'], columns='embedder', values=['TCGA'], aggfunc='first').reset_index()
+    df_pivot.columns = [' '.join(col).strip() for col in df_pivot.columns.values]
+    print(df_pivot.head(20))
+
+    for index, row in df_pivot.iterrows():
+        values = row.apply(find_value).dropna()
+        if not values.empty:
+            value_to_fill = values.values[0]
+            df_pivot.loc[index] = df_pivot.loc[index].fillna(value_to_fill)
+
+    dfs.append(df_pivot)
+
+
+# Merge the DataFrames
+merged_df = dfs[0].merge(dfs[1], on='model', suffixes=('_primary', '_metastatic'))
+# Rename the 'name' column after merging
+merged_df.drop(['category_primary'], axis=1, inplace=True)
+merged_df.rename(columns={'category_metastatic': 'category'}, inplace=True)
+# Get the column you want to move
+column_to_move = merged_df.pop('category')
+# Insert the column at the desired position (position 2)
+merged_df.insert(1, 'category', column_to_move)
+print(merged_df.head())
+
 # Generate LaTeX table
-header = "HGSOC_MAYO_hold_out" + tissue_type
-caption = "HGSOC_MAYO_hold_out" + tissue_type
-latex_table = generate_latex_table(df_pivot,header,caption)# save table to tex file with header name of part/experiment
+header = "HGSOC_MAYO_hold_out"
+caption = "HGSOC_MAYO_hold_out. Bold values are the highest scores for a given feature extractor and architecture. Underlined are the second-highest scores."
+
+latex_table = generate_latex_table(merged_df,header,caption)
+
 print(latex_table)
-with open("results_tables/HGSOC_MAYO_hold_out_"+tissue_type+".tex", 'w') as f:
+with open("results_tables/HGSOC_MAYO_hold_out.tex", 'w') as f:
     f.write(latex_table)

@@ -546,13 +546,11 @@ def main(args):
         np.save(r_slide_save_dir+"/omics_attns.npy", A_omic.cpu())
 
         # loop over all attn heads here.  
-        for map_number in range(A.shape[0]):
 
-            atttn_map = A[map_number,:].reshape(-1,1) # for multimodal rewrite code to make both possiboe. 
-
-            # atttn_map = A.copy()
-            # map_number = 0
-
+        if A.shape[1] == 1: 
+            # clam_sb heatmaps
+            atttn_map = A.copy()
+            map_number = 0
             block_map_save_path = save_segmentation_and_features(wsi_object, mask_file, h5_path, atttn_map, block_map_save_path)
             save_predictions(process_stack, i, namespaces['exp_args'], Y_hats_str, Y_probs)
             file = h5py.File(block_map_save_path, 'r')
@@ -563,6 +561,23 @@ def main(args):
             print('vis_level')
             print(def_vis_params["vis_level"])
             generate_and_save_heatmaps(scores, coords, slide_path, wsi_object, namespaces['heatmap_args'], namespaces['patch_args'], vis_patch_size, r_slide_save_dir, p_slide_save_dir,slide_id, blocky_wsi_kwargs['top_left'], blocky_wsi_kwargs['bot_right'],map_number)
+
+             
+        else:  
+            for map_number in range(A.shape[0]):
+                # for multimodal rewrite code to make both possiboe. 
+                atttn_map = A[map_number,:].reshape(-1,1) 
+
+                block_map_save_path = save_segmentation_and_features(wsi_object, mask_file, h5_path, atttn_map, block_map_save_path)
+                save_predictions(process_stack, i, namespaces['exp_args'], Y_hats_str, Y_probs)
+                file = h5py.File(block_map_save_path, 'r')
+                scores = file['attention_scores'][:]
+                coords = file['coords'][:]
+                file.close()
+                # sample_patches_and_save_heatmaps(process_stack, i, wsi_object, namespaces['patch_args'], namespaces['exp_args'], namespaces['sample_args'], scores, coords, label, Y_hats, slide_id)
+                print('vis_level')
+                print(def_vis_params["vis_level"])
+                generate_and_save_heatmaps(scores, coords, slide_path, wsi_object, namespaces['heatmap_args'], namespaces['patch_args'], vis_patch_size, r_slide_save_dir, p_slide_save_dir,slide_id, blocky_wsi_kwargs['top_left'], blocky_wsi_kwargs['bot_right'],map_number)
 
     save_configuration(namespaces['exp_args'], config_dict)
 
