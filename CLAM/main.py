@@ -115,7 +115,7 @@ parser.add_argument('--B', type=int, default=8, help='numbr of positive/negative
 parser.add_argument('--embed_dim', type=int, help='embedding dimension for embeddings going into CLAM')
 parser.add_argument('--omic_sizes', type=str, default=None, help='list of omic sizes for early fusion models.')
 parser.add_argument('--embeddings_path', type=str,nargs='*', default='/tank/WSI_data/Ovarian_WSIs/HGSOC_ovarian/CLAM/level_0/ViT/', help='path to embeddings')
-parser.add_argument('--omics_structure', type=str, default='None',choices=['None','concat_60','chowdry_clusters','60_chowdry_clusters','PPI_network_clusters','TCGA_grouped_1k','concat_1k'], help='way to pack omics data')
+parser.add_argument('--omics_structure', type=str, default='None',choices=['None','concat_60','chowdry_clusters','60_chowdry_clusters','PPI_network_clusters','TCGA_grouped_1k','concat_1k','plat_response_pathways'], help='way to pack omics data')
 
 args = parser.parse_args()
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")

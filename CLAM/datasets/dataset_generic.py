@@ -455,6 +455,23 @@ class Generic_MIL_Dataset(Generic_WSI_Classification_Dataset):
 			# print("omics shape")
 			# print([i.shape[0] for i in omics_features])
 
+		elif self.omics_structure == "plat_response_pathways":
+
+			omics_features=[]
+
+			protein_categories = protein_sets['plat_response_pathways']
+
+
+			# Create list of vectors for MCAT. 
+			for selected_prots in protein_categories.values():
+				sub_df = self.slide_data[selected_prots]
+				row_data = sub_df.loc[idx,:].astype(float) # get row for protien group
+				row_data = torch.tensor(row_data.values, dtype=torch.float32) 
+				omics_features.append(row_data) 
+
+			# print("omics shape")
+			# print([i.shape[0] for i in omics_features])
+
 
 		elif self.omics_structure == "PPI_network_clusters":
 			omics_features = []

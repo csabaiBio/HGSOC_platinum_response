@@ -215,9 +215,12 @@ for tissue_type in ["primary","metastatic"]:
 
         results_dict.append({"MCAT 60 \cite{chen2021multimodal}":["HGSOC_TRAIN_TCGA_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
         results_dict.append({"MCAT 1k \cite{chen2021multimodal}":["HGSOC_TRAIN_TCGA_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT plat_resp \cite{chen2021multimodal}":["HGSOC_TRAIN_TCGA_15_MCAT_Surv_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+
 
         results_dict.append({"SurvPath 60 \cite{jaume2023modeling}":["HGSOC_TRAIN_TCGA_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
         results_dict.append({"SurvPath 1k \cite{jaume2023modeling}":["HGSOC_TRAIN_TCGA_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath plat_resp \cite{jaume2023modeling}":["HGSOC_TRAIN_TCGA_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
     df = process_auc_files(results_dict)
     # print(df.head(20))
@@ -278,9 +281,12 @@ for tissue_type in ["primary","metastatic"]:
 
         results_dict.append({"MCAT 60 \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
         results_dict.append({"MCAT 1k \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT plat_resp \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_MCAT_Surv_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
         results_dict.append({"SurvPath 60 \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
         results_dict.append({"SurvPath 1k \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath plat_resp \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+
 
     df = process_auc_files(results_dict)
     # print(df.head(20))
@@ -343,9 +349,11 @@ for tissue_type in ["primary","metastatic"]:
 
         results_dict.append({"MCAT 60 \cite{lu2021data}":["HGSOC_UAB_hold_out_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
         results_dict.append({"MCAT 1k \cite{lu2021data}":["HGSOC_UAB_hold_out_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT plat_resp \cite{lu2021data}":["HGSOC_UAB_hold_out_15_MCAT_Surv_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
         results_dict.append({"SurvPath 60 \cite{lu2021data}":["HGSOC_UAB_hold_out_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
         results_dict.append({"SurvPath 1k \cite{lu2021data}":["HGSOC_UAB_hold_out_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath plat_resp \cite{lu2021data}":["HGSOC_UAB_hold_out_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
     df = process_auc_files(results_dict)
     # print(df.head(20))
@@ -404,9 +412,11 @@ for tissue_type in ["primary","metastatic"]:
 
         results_dict.append({"MCAT 60 \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
         results_dict.append({"MCAT 1k \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT plat_resp \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_MCAT_Surv_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
         results_dict.append({"SurvPath 60 \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
         results_dict.append({"SurvPath 1k \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath plat_resp \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
     df = process_auc_files(results_dict)
     # print(df.head(20))

@@ -85,8 +85,9 @@ def infer_single_slide(model, patho_feats, genomic_feats, label, reverse_label_d
 
         if isinstance(model, (SurvPath)):
             [attn_pathways, cross_attn_pathways, cross_attn_histology] = A # for SurvPath
-            print(attn_pathways.shape) #[9,9]
-            print(cross_attn_pathways.shape) #[9,528]
+
+            print(attn_pathways.shape) #[9,9] pathways to pathways attention.
+            print(cross_attn_pathways.shape) #[9,528] for heatmaps
             print(cross_attn_histology.shape) #[528,9]
             A = cross_attn_pathways[0,:].reshape(-1,1).cpu().numpy() #sample first as the attention. Needs to be (N,1)
 
@@ -557,7 +558,7 @@ def main(args):
             scores = file['attention_scores'][:]
             coords = file['coords'][:]
             file.close()
-            # sample_patches_and_save_heatmaps(process_stack, i, wsi_object, namespaces['patch_args'], namespaces['exp_args'], namespaces['sample_args'], scores, coords, label, Y_hats, slide_id)
+            sample_patches_and_save_heatmaps(process_stack, i, wsi_object, namespaces['patch_args'], namespaces['exp_args'], namespaces['sample_args'], scores, coords, label, Y_hats, slide_id)
             print('vis_level')
             print(def_vis_params["vis_level"])
             generate_and_save_heatmaps(scores, coords, slide_path, wsi_object, namespaces['heatmap_args'], namespaces['patch_args'], vis_patch_size, r_slide_save_dir, p_slide_save_dir,slide_id, blocky_wsi_kwargs['top_left'], blocky_wsi_kwargs['bot_right'],map_number)

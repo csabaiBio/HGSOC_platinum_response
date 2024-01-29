@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # List of models and experetiments to run.
-models=("clam_sb" "PorpoiseMMF" "PorpoiseMMF" "MCAT_Surv" "SurvPath" "MCAT_Surv" "SurvPath")
-omics_structures=("None" "concat_60" "concat_1k" "60_chowdry_clusters" "60_chowdry_clusters" "TCGA_grouped_1k" "TCGA_grouped_1k")
+# models=("clam_sb" "PorpoiseMMF" "PorpoiseMMF" "MCAT_Surv" "SurvPath" "MCAT_Surv" "SurvPath")
+# omics_structures=("None" "concat_60" "concat_1k" "60_chowdry_clusters" "60_chowdry_clusters" "TCGA_grouped_1k" "TCGA_grouped_1k")
 
 
+models=("MCAT_Surv" "SurvPath")
+omics_structures=("plat_response_pathways" "plat_response_pathways")
 
-
-# todo make omics structure list dynamic.... 
 
 # Embeddings paths TCGA
 embeds_TCGA_ViT=/tank/WSI_data/Ovarian_WSIs/TCGA-OV/CLAM/level_0/ViT
@@ -39,6 +39,8 @@ for ((i=0; i<length; i++)); do
         omic_sizes=[60]
     elif [ "$omics_structure" == "concat_1k" ]; then
         omic_sizes=[1539]
+    elif [ "$omics_structure" == "plat_response_pathways" ]; then
+        omic_sizes=[67,48,29,31,11,43,6,14,15,2,73,39,32,39,11,47,6,25,51,11,16,46,12,40,2,30,30,7,12,19,23,23,10,5,1,11,5,38,13,32,4,22,9,20,13,13,22,5,1,4,15,3,14,12,6,4,4,1,1,4,1,1,10,4,2,5,5,1,1,1,2,1,3,3,2,1,2,1,1,1]
     else
         omic_sizes=[1]
     fi
@@ -86,6 +88,8 @@ for ((i=0; i<length; i++)); do
         omic_sizes=[60]
     elif [ "$omics_structure" == "concat_1k" ]; then
         omic_sizes=[1539]
+    elif [ "$omics_structure" == "plat_response_pathways" ]; then
+        omic_sizes=[67,48,29,31,11,43,6,14,15,2,73,39,32,39,11,47,6,25,51,11,16,46,12,40,2,30,30,7,12,19,23,23,10,5,1,11,5,38,13,32,4,22,9,20,13,13,22,5,1,4,15,3,14,12,6,4,4,1,1,4,1,1,10,4,2,5,5,1,1,1,2,1,3,3,2,1,2,1,1,1]
     else
         omic_sizes=[1]
     fi
@@ -137,6 +141,8 @@ for ((i=0; i<length; i++)); do
         omic_sizes=[60]
     elif [ "$omics_structure" == "concat_1k" ]; then
         omic_sizes=[1539]
+    elif [ "$omics_structure" == "plat_response_pathways" ]; then
+        omic_sizes=[67,48,29,31,11,43,6,14,15,2,73,39,32,39,11,47,6,25,51,11,16,46,12,40,2,30,30,7,12,19,23,23,10,5,1,11,5,38,13,32,4,22,9,20,13,13,22,5,1,4,15,3,14,12,6,4,4,1,1,4,1,1,10,4,2,5,5,1,1,1,2,1,3,3,2,1,2,1,1,1]
     else
         omic_sizes=[1]
     fi
