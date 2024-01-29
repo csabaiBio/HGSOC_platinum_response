@@ -17,7 +17,7 @@ from models.multimodal import Multimodal
 from models.model_porpoise import PorpoiseMMF
 from models.model_coattn import MCAT_Surv
 from models.model_SurvPath import SurvPath
-
+import json
 from models.resnet_custom import resnet50_baseline
 from types import SimpleNamespace
 from collections import namedtuple
@@ -371,6 +371,22 @@ def load_genomic_features(process_stack, i, omics_structure):
 
         # print("omics shape")
         # print([i.shape[0] for i in omics_features])
+    
+    elif omics_structure == "plat_response_pathways":
+
+        genomic_feats=[]
+        with open('HGSOC_platinum_responce/proteomics_combinations.json', 'r') as file:
+            protein_sets = json.load(file)
+
+        protein_categories = protein_sets['plat_response_pathways']
+
+        # Create list of vectors for MCAT. 
+        for selected_prots in protein_categories.values():
+            sub_df = process_stack[selected_prots]
+            row_data = sub_df.loc[i,selected_prots].astype(float) # get row for protien group
+            row_data = torch.tensor(row_data.values, dtype=torch.float32) 
+            genomic_feats.append(row_data) 
+
 
 
     elif omics_structure == "PPI_network_clusters":

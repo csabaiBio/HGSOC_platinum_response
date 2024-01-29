@@ -1,4 +1,4 @@
-# first line: 80
+# first line: 82
 @memory.cache
 def clean_HGSOC():
     """Take clinical and protemic data tables from Chowrdy et.al and organise into form for training and testing."""
@@ -30,7 +30,7 @@ def clean_HGSOC():
 
     final_df = result.copy()
 
-    final_df = result.rename(columns={'File Name': 'slide_id', 'Patient ID': 'case_id'})
+    final_df = result.rename(columns={'File Name':'slide_id', 'Patient ID':'case_id'})
     df_unique = final_df.drop_duplicates(subset="slide_id")
 
     return df_unique 

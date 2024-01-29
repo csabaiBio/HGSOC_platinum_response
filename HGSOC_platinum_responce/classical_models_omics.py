@@ -96,6 +96,6 @@ for root, subfolders, files in os.walk(splits_folder):
 # Save results for paper tables.
 classical_results = [classical_results_60,classical_results_1k]
 
-with open('classical_results.json', 'w') as json_file:
+with open('classical_results_stratified.json', 'w') as json_file:
     json.dump(classical_results, json_file)
 

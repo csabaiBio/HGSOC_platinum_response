@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # List of models and experetiments to run.
-# models=("clam_sb" "PorpoiseMMF" "PorpoiseMMF" "MCAT_Surv" "SurvPath" "MCAT_Surv" "SurvPath")
-# omics_structures=("None" "concat_60" "concat_1k" "60_chowdry_clusters" "60_chowdry_clusters" "TCGA_grouped_1k" "TCGA_grouped_1k")
+models=("clam_sb" "PorpoiseMMF" "PorpoiseMMF" "MCAT_Surv" "SurvPath" "MCAT_Surv" "SurvPath" "MCAT_Surv" "SurvPath")
+omics_structures=("None" "concat_60" "concat_1k" "60_chowdry_clusters" "60_chowdry_clusters" "TCGA_grouped_1k" "TCGA_grouped_1k" "plat_response_pathways" "plat_response_pathways")
 
 
-models=("MCAT_Surv" "SurvPath")
-omics_structures=("plat_response_pathways" "plat_response_pathways")
+# models=("MCAT_Surv" "SurvPath")
+# omics_structures=("plat_response_pathways" "plat_response_pathways")
 
 
 # Embeddings paths TCGA

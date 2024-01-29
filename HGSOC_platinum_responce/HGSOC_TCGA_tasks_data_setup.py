@@ -5,6 +5,8 @@ import os
 from sklearn.impute import SimpleImputer, KNNImputer
 from sklearn.model_selection import KFold
 from joblib import Memory
+from sklearn.model_selection import GroupKFold
+
 
 cachedir = './cache'  # Define a directory where the cache will be stored
 memory = Memory(cachedir, verbose=0)
@@ -108,7 +110,7 @@ def clean_HGSOC():
 
     final_df = result.copy()
 
-    final_df = result.rename(columns={'File Name': 'slide_id', 'Patient ID': 'case_id'})
+    final_df = result.rename(columns={'File Name':'slide_id', 'Patient ID':'case_id'})
     df_unique = final_df.drop_duplicates(subset="slide_id")
 
     return df_unique 
@@ -118,37 +120,53 @@ def clean_HGSOC():
 def save_splits(main_df,task_type,tumor_location):
     """Given a task type create spl;its to be used for experiments."""
     # Focus on the 'Sample source' and 'slide_id' columns
-    data = main_df[['Sample Source', 'slide_id','Tumor type']]
+    data = main_df[['Sample Source', 'slide_id','Tumor type','case_id']]
     # Get unique sample sources
     # sample_sources = data['Sample Source'].unique()
 
     if task_type =="TCGA_train_HGSOC_test":
         cv_data = data[data['Sample Source']=="TCGA"]['slide_id']
+        groups = data[data['Sample Source']=="TCGA"]['case_id'].astype(str)
         data = data[data["Tumor type"]==tumor_location]
         test_data = data[data['Sample Source']!="TCGA"]['slide_id']
+        unique_groups = groups.nunique()
+        print(f"Number of unique groups: {unique_groups}")
 
     elif task_type =="HGSOC_train_TCGA_test":
         test_data = data[data['Sample Source']=="TCGA"]['slide_id'] 
         data = data[data["Tumor type"]==tumor_location]
         cv_data = data[data['Sample Source']!="TCGA"]['slide_id']
+        groups = data[data['Sample Source']!="TCGA"]['case_id'].astype(str)
+
+        unique_groups = groups.nunique()
+        print(f"Number of unique groups: {unique_groups}")
 
     elif task_type =="HGSOC_MAYO_hold_out":
         data = data[data["Tumor type"]==tumor_location]
         cv_data = data[data['Sample Source'].isin(["UAB","FHCRC"])]['slide_id']
         test_data = data[data['Sample Source']=="Mayo"]['slide_id']
-    
+        groups = data[data['Sample Source'].isin(["UAB","FHCRC"])]['case_id'].astype(str)
+
+        unique_groups = groups.nunique()
+        print(f"Number of unique groups: {unique_groups}")  
+
     elif task_type =="HGSOC_UAB_hold_out":
         data = data[data["Tumor type"]==tumor_location]
         cv_data = data[data['Sample Source'].isin(["Mayo","FHCRC"])]['slide_id']
         test_data = data[data['Sample Source']=="UAB"]['slide_id']
+        groups = data[data['Sample Source'].isin(["Mayo","FHCRC"])]['case_id'].astype(str)
+        unique_groups = groups.nunique()
+        print(f"Number of unique groups: {unique_groups}")
+
 
     # Create a KFold object for 5 folds
-    kf = KFold(n_splits=5, shuffle=True, random_state=42)
+    # kf = KFold(n_splits=5, shuffle=True, random_state=42)
     # Directory to store split files
-    split_dir = 'split_files'
 
+    kf = GroupKFold(n_splits=5)
+    # The groups parameter should be the 'case_id' column of your DataFrame
     # Apply 5-fold cross-validation
-    for fold, (train_index, val_index) in enumerate(kf.split(cv_data)):
+    for fold, (train_index, val_index) in enumerate(kf.split(cv_data, groups=groups)):
         # Extract train, val, and test slide IDs
         train_ids = cv_data.iloc[train_index].tolist()
         val_ids = cv_data.iloc[val_index].tolist()

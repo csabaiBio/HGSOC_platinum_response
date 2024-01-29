@@ -25,7 +25,7 @@ def get_auc_scores_from_file(root_dir):
             all_aucs = []
             file_extension = "*.gpu1"
 
-            joined_dir = "/mnt/ncshare/ozkilim/BRCA/results/platinum_responce_results/" + root_dir
+            joined_dir = "/mnt/ncshare/ozkilim/BRCA/results/platinum_responce_results_stratified/" + root_dir
             # Recursively traverse the directory and its subdirectories
             for subdir, _, files in os.walk(joined_dir):
                 # Use glob to find all files with the specified extension
@@ -247,7 +247,7 @@ merged_df.rename(columns={'category_metastatic': 'category'}, inplace=True)
 column_to_move = merged_df.pop('category')
 # Insert the column at the desired position (position 2)
 merged_df.insert(1, 'category', column_to_move)
-print(merged_df.head())
+# print(merged_df.head())
 
 # Generate LaTeX table
 header = "HGSOC train TCGA test"
@@ -276,16 +276,16 @@ for tissue_type in ["primary","metastatic"]:
 
         results_dict.append({"clam\_sb \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_clam_sb_None_"+embedding+"_"+tissue_type+"_s1","WSI",embedding]})
 
-        results_dict.append({"PorpoiseMMF 60 \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_PorpoiseMMF_concat_60_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"PorpoiseMMF 1k \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_PorpoiseMMF_concat_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"PorpoiseMMF 60 \cite{chen2022pan}":["TCGA_TRAIN_HGSOC_15_PorpoiseMMF_concat_60_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"PorpoiseMMF 1k \cite{chen2022pan}":["TCGA_TRAIN_HGSOC_15_PorpoiseMMF_concat_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
-        results_dict.append({"MCAT 60 \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"MCAT 1k \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"MCAT plat_resp \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_MCAT_Surv_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT 60 \cite{chen2021multimodal}":["TCGA_TRAIN_HGSOC_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT 1k \cite{chen2021multimodal}":["TCGA_TRAIN_HGSOC_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT plat_resp \cite{chen2021multimodal}":["TCGA_TRAIN_HGSOC_15_MCAT_Surv_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
-        results_dict.append({"SurvPath 60 \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"SurvPath 1k \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"SurvPath plat_resp \cite{lu2021data}":["TCGA_TRAIN_HGSOC_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath 60 \cite{jaume2023modeling}":["TCGA_TRAIN_HGSOC_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath 1k \cite{jaume2023modeling}":["TCGA_TRAIN_HGSOC_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath plat_resp \cite{jaume2023modeling}":["TCGA_TRAIN_HGSOC_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
 
     df = process_auc_files(results_dict)
@@ -314,7 +314,7 @@ merged_df.rename(columns={'category_metastatic': 'category'}, inplace=True)
 column_to_move = merged_df.pop('category')
 # Insert the column at the desired position (position 2)
 merged_df.insert(1, 'category', column_to_move)
-print(merged_df.head())
+# print(merged_df.head())
 
 # Generate LaTeX table
 header = "TCGA train HGSOC test"
@@ -344,23 +344,23 @@ for tissue_type in ["primary","metastatic"]:
 
         results_dict.append({"clam\_sb \cite{lu2021data}":["HGSOC_UAB_hold_out_15_clam_sb_None_"+embedding+"_"+tissue_type+"_s1","WSI",embedding]})
 
-        results_dict.append({"PorpoiseMMF 60 \cite{lu2021data}":["HGSOC_UAB_hold_out_15_PorpoiseMMF_concat_60_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"PorpoiseMMF 1k \cite{lu2021data}":["HGSOC_UAB_hold_out_15_PorpoiseMMF_concat_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"PorpoiseMMF 60 \cite{chen2022pan}":["HGSOC_UAB_hold_out_15_PorpoiseMMF_concat_60_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"PorpoiseMMF 1k \cite{chen2022pan}":["HGSOC_UAB_hold_out_15_PorpoiseMMF_concat_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
-        results_dict.append({"MCAT 60 \cite{lu2021data}":["HGSOC_UAB_hold_out_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"MCAT 1k \cite{lu2021data}":["HGSOC_UAB_hold_out_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"MCAT plat_resp \cite{lu2021data}":["HGSOC_UAB_hold_out_15_MCAT_Surv_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT 60 \cite{chen2021multimodal}":["HGSOC_UAB_hold_out_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT 1k \cite{chen2021multimodal}":["HGSOC_UAB_hold_out_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT plat_resp \cite{chen2021multimodal}":["HGSOC_UAB_hold_out_15_MCAT_Surv_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
-        results_dict.append({"SurvPath 60 \cite{lu2021data}":["HGSOC_UAB_hold_out_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"SurvPath 1k \cite{lu2021data}":["HGSOC_UAB_hold_out_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"SurvPath plat_resp \cite{lu2021data}":["HGSOC_UAB_hold_out_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath 60 \cite{jaume2023modeling}":["HGSOC_UAB_hold_out_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath 1k \cite{jaume2023modeling}":["HGSOC_UAB_hold_out_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath plat_resp \cite{jaume2023modeling}":["HGSOC_UAB_hold_out_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
     df = process_auc_files(results_dict)
     # print(df.head(20))
     # Pivot the DataFrame
     df_pivot = df.pivot_table(index=['model', 'category'], columns='embedder', values=['TCGA'], aggfunc='first').reset_index()
     df_pivot.columns = [' '.join(col).strip() for col in df_pivot.columns.values]
-    print(df_pivot.head(20))
+    # print(df_pivot.head(20))
 
     for index, row in df_pivot.iterrows():
         values = row.apply(find_value).dropna()
@@ -380,7 +380,7 @@ merged_df.rename(columns={'category_metastatic': 'category'}, inplace=True)
 column_to_move = merged_df.pop('category')
 # Insert the column at the desired position (position 2)
 merged_df.insert(1, 'category', column_to_move)
-print(merged_df.head())
+# print(merged_df.head())
 
 # Generate LaTeX table
 header = "HGSOC_UAB_hold_out"
@@ -407,23 +407,23 @@ for tissue_type in ["primary","metastatic"]:
 
         results_dict.append({"clam\_sb \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_clam_sb_None_"+embedding+"_"+tissue_type+"_s1","WSI",embedding]})
 
-        results_dict.append({"PorpoiseMMF 60 \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_PorpoiseMMF_concat_60_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"PorpoiseMMF 1k \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_PorpoiseMMF_concat_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"PorpoiseMMF 60 \cite{chen2022pan}":["HGSOC_MAYO_hold_out_15_PorpoiseMMF_concat_60_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"PorpoiseMMF 1k \cite{chen2022pan}":["HGSOC_MAYO_hold_out_15_PorpoiseMMF_concat_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
-        results_dict.append({"MCAT 60 \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"MCAT 1k \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"MCAT plat_resp \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_MCAT_Surv_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT 60 \cite{chen2021multimodal}":["HGSOC_MAYO_hold_out_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT 1k \cite{chen2021multimodal}":["HGSOC_MAYO_hold_out_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT plat_resp \cite{chen2021multimodal}":["HGSOC_MAYO_hold_out_15_MCAT_Surv_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
-        results_dict.append({"SurvPath 60 \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"SurvPath 1k \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"SurvPath plat_resp \cite{lu2021data}":["HGSOC_MAYO_hold_out_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath 60 \cite{jaume2023modeling}":["HGSOC_MAYO_hold_out_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath 1k \cite{jaume2023modeling}":["HGSOC_MAYO_hold_out_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath plat_resp \cite{jaume2023modeling}":["HGSOC_MAYO_hold_out_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
     df = process_auc_files(results_dict)
     # print(df.head(20))
     # Pivot the DataFrame
     df_pivot = df.pivot_table(index=['model', 'category'], columns='embedder', values=['TCGA'], aggfunc='first').reset_index()
     df_pivot.columns = [' '.join(col).strip() for col in df_pivot.columns.values]
-    print(df_pivot.head(20))
+    # print(df_pivot.head(20))
 
     for index, row in df_pivot.iterrows():
         values = row.apply(find_value).dropna()
@@ -443,7 +443,7 @@ merged_df.rename(columns={'category_metastatic': 'category'}, inplace=True)
 column_to_move = merged_df.pop('category')
 # Insert the column at the desired position (position 2)
 merged_df.insert(1, 'category', column_to_move)
-print(merged_df.head())
+# print(merged_df.head())
 
 # Generate LaTeX table
 header = "HGSOC_MAYO_hold_out"
