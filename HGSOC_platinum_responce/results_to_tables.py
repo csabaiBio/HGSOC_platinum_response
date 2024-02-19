@@ -4,10 +4,10 @@ import glob
 import os
 import numpy as np
 import pandas as pd 
-from scipy import stats
 import json
 from sklearn.metrics import roc_auc_score
 import re
+
 
 
 def test_auc(tf_path):
@@ -49,7 +49,7 @@ def get_ensemble_auc_scores_from_files(root_dirs):
         accumulated_prob = None
         labels = None
         for root_dir in root_dirs: 
-            file = "../../results/platinum_responce_results" + root_dir + "/split_"+ str(i) +"_results.pkl"
+            file = "/mnt/ncshare/ozkilim/BRCA/results/platinum_responce_results_stratified/" + root_dir + "/split_"+ str(i) +"_results.pkl"
             #read the pkl 
             df = pd.read_pickle(file)
             data = []
@@ -94,7 +94,7 @@ def process_auc_files(results_dict):
 
         if "ENSEMBLE" in list(results_dict[i].keys())[0]:
 
-            get_ensemble_auc_scores_from_files(list(results_dict[i].values())[0][0])
+            aucs = get_ensemble_auc_scores_from_files(list(results_dict[i].values())[0][0])
         
             category = list(results_dict[i].values())[0][1]
             embedder = list(results_dict[i].values())[0][2]
@@ -130,7 +130,6 @@ def format_highest_values(df):
     return df
 
 
-
 def parse_value(value):
     # Function to parse the numerical part before '±'
     if pd.notna(value):
@@ -158,7 +157,7 @@ def generate_latex_table(df_pivot, header, caption):
     latex_str = "\\begin{table}[ht]\n\\footnotesize\n\\centering\n\\begin{tabular}{cc|ccc|ccc}\n\\toprule\n"
     latex_str += " & \\multicolumn{1}{c}{" + header + "} & \\multicolumn{3}{c}{Primary} & \\multicolumn{3}{c}{Metastatic} \\\\\n"
     latex_str += "\\midrule\n"
-    latex_str += " & Model & CTransPath \\cite{wang2022transformer} & Lunit-Dino \\cite{kang2023benchmarking} & OV-Dino (ours) & CTransPath & Lunit-Dino & OV-Dino \\\\\n"
+    latex_str += " & Model &  Lunit-Dino \\cite{kang2023benchmarking} & OV-Dino (ours) &  CTransPath \\cite{wang2022transformer} & Lunit-Dino & OV-Dino &  CTransPath \\\\\n"
     latex_str += "\\midrule\n"
 
     # Add rows from the DataFrame
@@ -180,7 +179,7 @@ def generate_latex_table(df_pivot, header, caption):
             latex_str += f" & {values_str} \\\\\n"
         latex_str += "\\midrule\n"
 
-    latex_str += "\\bottomrule\n\\end{tabular}\n\\vspace{6pt}\n\\caption{" + caption + "}\n\\end{table}"
+    latex_str += "\\bottomrule\n\\end{tabular}\n\\vspace{6pt}\n\\caption{" + caption + "}\n\\label{tab:"+header+"}\\end{table}"
 
     return latex_str
 
@@ -192,10 +191,30 @@ def find_value(s):
             return match.group(0)
     return np.nan
 
+def extract_numeric_values(value):
+    """Extracts the numeric value and standard deviation from a string in the format 'value±std'."""
+    match = re.match(r"([0-9.]+)±([0-9.]+)", value)
+    if match:
+        return float(match.group(1)), float(match.group(2))
+    else:
+        return np.nan, np.nan  # Return NaN if format does not match
+    
+def calculate_mean_std(row, cols):
+    values = [extract_numeric_values(row[col]) for col in cols]
+    means = [val[0] for val in values if not np.isnan(val[0])]
+    # stds = [val[1] for val in values if not np.isnan(val[1])]  # If you want to consider the original stds
+    
+    # Calculate mean and standard deviation of the means
+    mean_of_means = np.mean(means)
+    std_of_means = np.std(means)  # Standard deviation of the values
+    
+    return f"{mean_of_means:.3f}±{std_of_means:.3f}"
+
+
 ######## main #########
 
 # need baseline omics scroes.
-with open('classical_results.json', 'r') as json_file:
+with open('classical_results_stratified.json', 'r') as json_file:
     classical_results = json.load(json_file)
 
 
@@ -215,15 +234,18 @@ for tissue_type in ["primary","metastatic"]:
 
         results_dict.append({"MCAT 60 \cite{chen2021multimodal}":["HGSOC_TRAIN_TCGA_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
         results_dict.append({"MCAT 1k \cite{chen2021multimodal}":["HGSOC_TRAIN_TCGA_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"MCAT plat_resp \cite{chen2021multimodal}":["HGSOC_TRAIN_TCGA_15_MCAT_Surv_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT plat\_resp \cite{chen2021multimodal}":["HGSOC_TRAIN_TCGA_15_MCAT_Surv_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
 
         results_dict.append({"SurvPath 60 \cite{jaume2023modeling}":["HGSOC_TRAIN_TCGA_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
         results_dict.append({"SurvPath 1k \cite{jaume2023modeling}":["HGSOC_TRAIN_TCGA_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"SurvPath plat_resp \cite{jaume2023modeling}":["HGSOC_TRAIN_TCGA_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath plat\_resp \cite{jaume2023modeling}":["HGSOC_TRAIN_TCGA_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+
+        # TODO organise emseble and pot in table! 
+        # results_dict.append({"ENSEMBLE ENSEMBLE" :[["HGSOC_TRAIN_TCGA_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","HGSOC_TRAIN_TCGA_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","HGSOC_TRAIN_TCGA_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1"],"Multimodal",embedding]})
 
     df = process_auc_files(results_dict)
-    # print(df.head(20))
+
     # Pivot the DataFrame
     df_pivot = df.pivot_table(index=['model', 'category'], columns='embedder', values=['TCGA'], aggfunc='first').reset_index()
     df_pivot.columns = [' '.join(col).strip() for col in df_pivot.columns.values]
@@ -238,6 +260,10 @@ for tissue_type in ["primary","metastatic"]:
     dfs.append(df_pivot)
 
 
+# columns = ['TCGA CTransPath','TCGA OV_ViT','TCGA ViT']
+# dfs[0]['Mean_p'] = dfs[0].apply(lambda row: calculate_mean_std(row, columns), axis=1)
+# dfs[1]['Mean_m'] = dfs[1].apply(lambda row: calculate_mean_std(row, columns), axis=1)
+
 # Merge the DataFrames
 merged_df = dfs[0].merge(dfs[1], on='model', suffixes=('_primary', '_metastatic'))
 # Rename the 'name' column after merging
@@ -247,7 +273,6 @@ merged_df.rename(columns={'category_metastatic': 'category'}, inplace=True)
 column_to_move = merged_df.pop('category')
 # Insert the column at the desired position (position 2)
 merged_df.insert(1, 'category', column_to_move)
-# print(merged_df.head())
 
 # Generate LaTeX table
 header = "HGSOC train TCGA test"
@@ -281,19 +306,17 @@ for tissue_type in ["primary","metastatic"]:
 
         results_dict.append({"MCAT 60 \cite{chen2021multimodal}":["TCGA_TRAIN_HGSOC_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
         results_dict.append({"MCAT 1k \cite{chen2021multimodal}":["TCGA_TRAIN_HGSOC_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"MCAT plat_resp \cite{chen2021multimodal}":["TCGA_TRAIN_HGSOC_15_MCAT_Surv_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT plat\_resp \cite{chen2021multimodal}":["TCGA_TRAIN_HGSOC_15_MCAT_Surv_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
         results_dict.append({"SurvPath 60 \cite{jaume2023modeling}":["TCGA_TRAIN_HGSOC_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
         results_dict.append({"SurvPath 1k \cite{jaume2023modeling}":["TCGA_TRAIN_HGSOC_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"SurvPath plat_resp \cite{jaume2023modeling}":["TCGA_TRAIN_HGSOC_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath plat\_resp \cite{jaume2023modeling}":["TCGA_TRAIN_HGSOC_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
 
     df = process_auc_files(results_dict)
-    # print(df.head(20))
     # Pivot the DataFrame
     df_pivot = df.pivot_table(index=['model', 'category'], columns='embedder', values=['TCGA'], aggfunc='first').reset_index()
     df_pivot.columns = [' '.join(col).strip() for col in df_pivot.columns.values]
-    print(df_pivot.head(20))
 
     # Populate nans for classical models...
     for index, row in df_pivot.iterrows():
@@ -305,6 +328,9 @@ for tissue_type in ["primary","metastatic"]:
     dfs.append(df_pivot)
 
 
+# columns = ['TCGA CTransPath','TCGA OV_ViT','TCGA ViT']
+# dfs[0]['Mean_p'] = dfs[0].apply(lambda row: calculate_mean_std(row, columns), axis=1)
+# dfs[1]['Mean_m'] = dfs[1].apply(lambda row: calculate_mean_std(row, columns), axis=1)
 # Merge the DataFrames
 merged_df = dfs[0].merge(dfs[1], on='model', suffixes=('_primary', '_metastatic'))
 # Rename the 'name' column after merging
@@ -314,7 +340,6 @@ merged_df.rename(columns={'category_metastatic': 'category'}, inplace=True)
 column_to_move = merged_df.pop('category')
 # Insert the column at the desired position (position 2)
 merged_df.insert(1, 'category', column_to_move)
-# print(merged_df.head())
 
 # Generate LaTeX table
 header = "TCGA train HGSOC test"
@@ -349,14 +374,13 @@ for tissue_type in ["primary","metastatic"]:
 
         results_dict.append({"MCAT 60 \cite{chen2021multimodal}":["HGSOC_UAB_hold_out_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
         results_dict.append({"MCAT 1k \cite{chen2021multimodal}":["HGSOC_UAB_hold_out_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"MCAT plat_resp \cite{chen2021multimodal}":["HGSOC_UAB_hold_out_15_MCAT_Surv_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT plat\_resp \cite{chen2021multimodal}":["HGSOC_UAB_hold_out_15_MCAT_Surv_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
         results_dict.append({"SurvPath 60 \cite{jaume2023modeling}":["HGSOC_UAB_hold_out_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
         results_dict.append({"SurvPath 1k \cite{jaume2023modeling}":["HGSOC_UAB_hold_out_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"SurvPath plat_resp \cite{jaume2023modeling}":["HGSOC_UAB_hold_out_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath plat\_resp \cite{jaume2023modeling}":["HGSOC_UAB_hold_out_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
     df = process_auc_files(results_dict)
-    # print(df.head(20))
     # Pivot the DataFrame
     df_pivot = df.pivot_table(index=['model', 'category'], columns='embedder', values=['TCGA'], aggfunc='first').reset_index()
     df_pivot.columns = [' '.join(col).strip() for col in df_pivot.columns.values]
@@ -370,7 +394,9 @@ for tissue_type in ["primary","metastatic"]:
 
     dfs.append(df_pivot)
 
-
+# columns = ['TCGA CTransPath','TCGA OV_ViT','TCGA ViT']
+# dfs[0]['Mean_p'] = dfs[0].apply(lambda row: calculate_mean_std(row, columns), axis=1)
+# dfs[1]['Mean_m'] = dfs[1].apply(lambda row: calculate_mean_std(row, columns), axis=1)
 # Merge the DataFrames
 merged_df = dfs[0].merge(dfs[1], on='model', suffixes=('_primary', '_metastatic'))
 # Rename the 'name' column after merging
@@ -383,8 +409,8 @@ merged_df.insert(1, 'category', column_to_move)
 # print(merged_df.head())
 
 # Generate LaTeX table
-header = "HGSOC_UAB_hold_out"
-caption = "HGSOC_UAB_hold_out. Bold values are the highest scores for a given feature extractor and architecture. Underlined are the second-highest scores."
+header = "HGSOC\_UAB\_hold_out"
+caption = "HGSOC\_UAB\_hold\_out. Bold values are the highest scores for a given feature extractor and architecture. Underlined are the second-highest scores."
 
 latex_table = generate_latex_table(merged_df,header,caption)
 
@@ -392,7 +418,6 @@ latex_table = generate_latex_table(merged_df,header,caption)
 print(latex_table)
 with open("results_tables/HGSOC_UAB_hold_out.tex", 'w') as f:
     f.write(latex_table)
-
 
 
 
@@ -412,14 +437,77 @@ for tissue_type in ["primary","metastatic"]:
 
         results_dict.append({"MCAT 60 \cite{chen2021multimodal}":["HGSOC_MAYO_hold_out_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
         results_dict.append({"MCAT 1k \cite{chen2021multimodal}":["HGSOC_MAYO_hold_out_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"MCAT plat_resp \cite{chen2021multimodal}":["HGSOC_MAYO_hold_out_15_MCAT_Surv_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT plat\_resp \cite{chen2021multimodal}":["HGSOC_MAYO_hold_out_15_MCAT_Surv_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
         results_dict.append({"SurvPath 60 \cite{jaume2023modeling}":["HGSOC_MAYO_hold_out_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
         results_dict.append({"SurvPath 1k \cite{jaume2023modeling}":["HGSOC_MAYO_hold_out_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
-        results_dict.append({"SurvPath plat_resp \cite{jaume2023modeling}":["HGSOC_MAYO_hold_out_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath plat\_resp \cite{jaume2023modeling}":["HGSOC_MAYO_hold_out_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
 
     df = process_auc_files(results_dict)
-    # print(df.head(20))
+    # Pivot the DataFrame
+    df_pivot = df.pivot_table(index=['model', 'category'], columns='embedder', values=['TCGA'], aggfunc='first').reset_index()
+    df_pivot.columns = [' '.join(col).strip() for col in df_pivot.columns.values]
+    # print(df_pivot.head(20))
+
+    for index, row in df_pivot.iterrows():
+        values = row.apply(find_value).dropna()
+        if not values.empty:
+            value_to_fill = values.values[0]
+            df_pivot.loc[index] = df_pivot.loc[index].fillna(value_to_fill)
+
+    dfs.append(df_pivot)
+
+# columns = ['TCGA CTransPath','TCGA OV_ViT','TCGA ViT']
+# dfs[0]['Mean_p'] = dfs[0].apply(lambda row: calculate_mean_std(row, columns), axis=1)
+# dfs[1]['Mean_m'] = dfs[1].apply(lambda row: calculate_mean_std(row, columns), axis=1)
+# Merge the DataFrames
+merged_df = dfs[0].merge(dfs[1], on='model', suffixes=('_primary', '_metastatic'))
+
+# Rename the 'name' column after merging
+merged_df.drop(['category_primary'], axis=1, inplace=True)
+merged_df.rename(columns={'category_metastatic': 'category'}, inplace=True)
+# Get the column you want to move
+column_to_move = merged_df.pop('category')
+# Insert the column at the desired position (position 2)
+merged_df.insert(1, 'category', column_to_move)
+
+# Generate LaTeX table
+header = "HGSOC\_MAYO\_hold\_out"
+caption = "HGSOC\_MAYO\_hold\_out. Bold values are the highest scores for a given feature extractor and architecture. Underlined are the second-highest scores."
+
+latex_table = generate_latex_table(merged_df,header,caption)
+
+print(latex_table)
+with open("results_tables/HGSOC_MAYO_hold_out.tex", 'w') as f:
+    f.write(latex_table)
+
+
+
+
+# Part 4. 
+# factorize to load all tables from runs.. more automated less room for bugs... 
+dfs = []
+for tissue_type in ["primary","metastatic"]:
+
+    results_dict = [{"60 protein ensemble \cite{chowdhury2023proteogenomic}":[classical_results[0]['Combined_MAYO_hold_out_' + tissue_type.capitalize()],"Omics","ViT"]}, {"1k protein ensemble":[classical_results[1]['Combined_MAYO_hold_out_' + tissue_type.capitalize()],"Omics","ViT"]}]
+    embeddings = ["ViT","OV_ViT","CTransPath"]
+
+    for embedding in embeddings: 
+
+        results_dict.append({"clam\_sb \cite{lu2021data}":["Combined_MAYO_hold_out_15_clam_sb_None_"+embedding+"_"+tissue_type+"_s1","WSI",embedding]})
+
+        results_dict.append({"PorpoiseMMF 60 \cite{chen2022pan}":["Combined_MAYO_hold_out_15_PorpoiseMMF_concat_60_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"PorpoiseMMF 1k \cite{chen2022pan}":["Combined_MAYO_hold_out_15_PorpoiseMMF_concat_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+
+        results_dict.append({"MCAT 60 \cite{chen2021multimodal}":["Combined_MAYO_hold_out_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT 1k \cite{chen2021multimodal}":["Combined_MAYO_hold_out_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT plat\_resp \cite{chen2021multimodal}":["Combined_MAYO_hold_out_15_MCAT_Surv_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+
+        results_dict.append({"SurvPath 60 \cite{jaume2023modeling}":["Combined_MAYO_hold_out_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath 1k \cite{jaume2023modeling}":["Combined_MAYO_hold_out_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath plat\_resp \cite{jaume2023modeling}":["Combined_MAYO_hold_out_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+
+    df = process_auc_files(results_dict)
     # Pivot the DataFrame
     df_pivot = df.pivot_table(index=['model', 'category'], columns='embedder', values=['TCGA'], aggfunc='first').reset_index()
     df_pivot.columns = [' '.join(col).strip() for col in df_pivot.columns.values]
@@ -436,6 +524,7 @@ for tissue_type in ["primary","metastatic"]:
 
 # Merge the DataFrames
 merged_df = dfs[0].merge(dfs[1], on='model', suffixes=('_primary', '_metastatic'))
+
 # Rename the 'name' column after merging
 merged_df.drop(['category_primary'], axis=1, inplace=True)
 merged_df.rename(columns={'category_metastatic': 'category'}, inplace=True)
@@ -443,14 +532,72 @@ merged_df.rename(columns={'category_metastatic': 'category'}, inplace=True)
 column_to_move = merged_df.pop('category')
 # Insert the column at the desired position (position 2)
 merged_df.insert(1, 'category', column_to_move)
-# print(merged_df.head())
 
 # Generate LaTeX table
-header = "HGSOC_MAYO_hold_out"
-caption = "HGSOC_MAYO_hold_out. Bold values are the highest scores for a given feature extractor and architecture. Underlined are the second-highest scores."
+header = "Combined\_MAYO\_hold\_out"
+caption = "Combined\_MAYO\_hold\_out. Bold values are the highest scores for a given feature extractor and architecture. Underlined are the second-highest scores."
 
 latex_table = generate_latex_table(merged_df,header,caption)
 
 print(latex_table)
-with open("results_tables/HGSOC_MAYO_hold_out.tex", 'w') as f:
+with open("results_tables/Combined_MAYO_hold_out.tex", 'w') as f:
+    f.write(latex_table)
+
+
+
+dfs = []
+for tissue_type in ["primary","metastatic"]:
+
+    results_dict = [{"60 protein ensemble \cite{chowdhury2023proteogenomic}":[classical_results[0]['Combined_UAB_hold_out_' + tissue_type.capitalize()],"Omics","ViT"]}, {"1k protein ensemble":[classical_results[1]['Combined_UAB_hold_out_' + tissue_type.capitalize()],"Omics","ViT"]}]
+    embeddings = ["ViT","OV_ViT","CTransPath"]
+
+    for embedding in embeddings: 
+
+        results_dict.append({"clam\_sb \cite{lu2021data}":["Combined_UAB_hold_out_15_clam_sb_None_"+embedding+"_"+tissue_type+"_s1","WSI",embedding]})
+
+        results_dict.append({"PorpoiseMMF 60 \cite{chen2022pan}":["Combined_UAB_hold_out_15_PorpoiseMMF_concat_60_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"PorpoiseMMF 1k \cite{chen2022pan}":["Combined_UAB_hold_out_15_PorpoiseMMF_concat_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+
+        results_dict.append({"MCAT 60 \cite{chen2021multimodal}":["Combined_UAB_hold_out_15_MCAT_Surv_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT 1k \cite{chen2021multimodal}":["Combined_UAB_hold_out_15_MCAT_Surv_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"MCAT plat\_resp \cite{chen2021multimodal}":["Combined_UAB_hold_out_15_MCAT_Surv_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+
+        results_dict.append({"SurvPath 60 \cite{jaume2023modeling}":["Combined_UAB_hold_out_15_SurvPath_60_chowdry_clusters_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath 1k \cite{jaume2023modeling}":["Combined_UAB_hold_out_15_SurvPath_TCGA_grouped_1k_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+        results_dict.append({"SurvPath plat\_resp \cite{jaume2023modeling}":["Combined_UAB_hold_out_15_SurvPath_plat_response_pathways_"+embedding+"_"+tissue_type+"_s1","Multimodal",embedding]})
+
+    df = process_auc_files(results_dict)
+    # Pivot the DataFrame
+    df_pivot = df.pivot_table(index=['model', 'category'], columns='embedder', values=['TCGA'], aggfunc='first').reset_index()
+    df_pivot.columns = [' '.join(col).strip() for col in df_pivot.columns.values]
+    # print(df_pivot.head(20))
+
+    for index, row in df_pivot.iterrows():
+        values = row.apply(find_value).dropna()
+        if not values.empty:
+            value_to_fill = values.values[0]
+            df_pivot.loc[index] = df_pivot.loc[index].fillna(value_to_fill)
+
+    dfs.append(df_pivot)
+
+
+# Merge the DataFrames
+merged_df = dfs[0].merge(dfs[1], on='model', suffixes=('_primary', '_metastatic'))
+
+# Rename the 'name' column after merging
+merged_df.drop(['category_primary'], axis=1, inplace=True)
+merged_df.rename(columns={'category_metastatic': 'category'}, inplace=True)
+# Get the column you want to move
+column_to_move = merged_df.pop('category')
+# Insert the column at the desired position (position 2)
+merged_df.insert(1, 'category', column_to_move)
+
+# Generate LaTeX table
+header = "Combined\_UAB\_hold\_out"
+caption = "Combined\_UAB\_hold\_out. Bold values are the highest scores for a given feature extractor and architecture. Underlined are the second-highest scores."
+
+latex_table = generate_latex_table(merged_df,header,caption)
+
+print(latex_table)
+with open("results_tables/Combined_UAB_hold_out.tex", 'w') as f:
     f.write(latex_table)

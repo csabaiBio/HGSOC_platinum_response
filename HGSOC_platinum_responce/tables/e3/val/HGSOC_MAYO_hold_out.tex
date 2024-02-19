@@ -1,0 +1,32 @@
+\begin{table}[ht]
+\footnotesize
+\centering
+\begin{tabular}{cc|cccc|cccc}
+\toprule
+ & \multicolumn{1}{c}{HGSOC\_MAYO\_hold\_out} & \multicolumn{3}{c}{Primary} & \multicolumn{3}{c}{Metastatic} \\
+\midrule
+ & Model &  Lunit-Dino \cite{kang2023benchmarking} & OV-Dino (ours) &  CTransPath \cite{wang2022transformer}  & ensemble & Lunit-Dino & OV-Dino &  CTransPath & ensemble \\
+\midrule
+\multirow{9}{*}{\rotatebox[origin=c]{90}{\tiny Multimodal}} 
+ & MCAT 1k \cite{chen2021multimodal} & 0.585±0.117 & 0.434±0.157 & 0.622±0.137 & 0.478±0.244 & 0.472±0.141 & 0.536±0.066 \\
+ & MCAT 60 \cite{chen2021multimodal} & 0.561±0.232 & 0.451±0.264 & \underline{0.679±0.101} & 0.679±0.316 & 0.72±0.128 & 0.601±0.132 \\
+ & MCAT plat\_resp \cite{chen2021multimodal} & 0.592±0.148 & 0.617±0.135 & \textbf{0.68±0.148} & 0.511±0.202 & 0.423±0.085 & 0.418±0.119 \\
+ & PorpoiseMMF 1k \cite{chen2022pan} & \underline{0.659±0.126} & 0.623±0.091 & 0.653±0.16 & 0.575±0.181 & 0.691±0.079 & 0.717±0.122 \\
+ & PorpoiseMMF 60 \cite{chen2022pan} & \textbf{0.717±0.132} & \underline{0.71±0.175} & 0.659±0.128 & \textbf{0.821±0.127} & \textbf{0.914±0.049} & \textbf{0.831±0.145} \\
+ & SurvPath 1k \cite{jaume2023modeling} & 0.585±0.198 & 0.645±0.148 & 0.613±0.219 & 0.529±0.221 & 0.669±0.219 & 0.717±0.126 \\
+ & SurvPath 60 \cite{jaume2023modeling} & 0.611±0.232 & \textbf{0.721±0.163} & 0.626±0.044 & \underline{0.802±0.126} & 0.733±0.16 & 0.703±0.155 \\
+ & SurvPath IPS \cite{jaume2023modeling} & 0.613±0.189 & 0.468±0.099 & 0.676±0.184 & 0.539±0.123 & 0.702±0.133 & 0.529±0.082 \\
+ & SurvPath plat\_resp \cite{jaume2023modeling} & 0.635±0.248 & 0.688±0.186 & 0.662±0.125 & 0.631±0.129 & 0.639±0.161 & 0.649±0.082 \\
+\midrule
+\multirow{2}{*}{\rotatebox[origin=c]{90}{\tiny Omics}} 
+ & 1k protein ensemble & 0.492±0.058 & 0.492±0.058 & 0.492±0.058 & 0.721±0.069 & 0.721±0.069 & 0.721±0.069 \\
+ & 60 protein ensemble \cite{chowdhury2023proteogenomic} & 0.569±0.114 & 0.569±0.114 & 0.569±0.114 & 0.755±0.031 & \underline{0.755±0.031} & \underline{0.755±0.031} \\
+\midrule
+\multirow{1}{*}{\rotatebox[origin=c]{90}{\tiny WSI}} 
+ & clam\_sb \cite{lu2021data} & 0.565±0.147 & 0.495±0.063 & 0.385±0.129 & 0.573±0.105 & 0.645±0.105 & 0.599±0.128 \\
+\midrule
+\bottomrule
+\end{tabular}
+\vspace{6pt}
+\caption{HGSOC\_MAYO\_hold\_out. Bold values are the highest scores for a given feature extractor and architecture. Underlined are the second-highest scores.}
+\label{tab:HGSOC\_MAYO\_hold\_out}\end{table}

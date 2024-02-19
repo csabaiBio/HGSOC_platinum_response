@@ -32,6 +32,12 @@ def clean_TCGA(TCGA_OV_slides_folder_path):
     # Extract TCGA identifiers from filenames and create a new DataFrame
     # Assuming the TCGA ID is always at the start of the filename up to the third '-'
     file_df = pd.DataFrame({'Filename': filenames})
+    #TODO: select only FFPE slides...
+
+    file_df['slide_type'] = file_df['Filename'].str.extract(r'-([^-\.]+)\.')
+    slide_types = ['TS1','DX1','TSA','DX2']
+    file_df = file_df[file_df['slide_type'].isin(slide_types)]
+
     file_df['bcr_patient_barcode'] = file_df['Filename'].apply(lambda x: '-'.join(x.split('-')[:3]))
     proteomics_and_wsi = merged.merge(file_df, on='bcr_patient_barcode', how='left')
     proteomics_and_wsi["Filename"] = proteomics_and_wsi["Filename"].str[:-4]

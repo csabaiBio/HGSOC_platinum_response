@@ -1,0 +1,33 @@
+\begin{table}[ht]
+\footnotesize
+\centering
+\begin{tabular}{cc|cccc|cccc}
+\toprule
+ & \multicolumn{1}{c}{HGSOC train TCGA test} & \multicolumn{3}{c}{Primary} & \multicolumn{3}{c}{Metastatic} \\
+\midrule
+ & Model &  Lunit-Dino \cite{kang2023benchmarking} & OV-Dino (ours) &  CTransPath \cite{wang2022transformer}  & ensemble & Lunit-Dino & OV-Dino &  CTransPath & ensemble \\
+\midrule
+\multirow{10}{*}{\rotatebox[origin=c]{90}{\tiny Multimodal}} 
+ & MCAT 1k \cite{chen2021multimodal} & 0.513±0.039 & 0.498±0.043 & 0.508±0.044 & 0.499±0.02 & 0.505±0.039 & 0.501±0.035 & 0.536±0.079 & 0.536±0.054 \\
+ & MCAT 60 \cite{chen2021multimodal} & 0.602±0.085 & 0.517±0.1 & 0.566±0.093 & 0.653±0.085 & 0.51±0.08 & 0.57±0.092 & 0.534±0.098 & 0.569±0.062 \\
+ & MCAT IPS_pathways \cite{chen2021multimodal} & 0.501±0.033 & 0.494±0.012 & 0.512±0.093 & 0.501±0.066 & 0.552±0.027 & 0.478±0.027 & 0.519±0.089 & 0.491±0.064 \\
+ & MCAT plat\_resp \cite{chen2021multimodal} & 0.511±0.035 & 0.483±0.059 & 0.518±0.047 & 0.525±0.042 & 0.506±0.041 & 0.465±0.028 & 0.486±0.072 & 0.491±0.061 \\
+ & PorpoiseMMF 1k \cite{chen2022pan} & \textbf{0.71±0.027} & 0.663±0.018 & \underline{0.67±0.015} & 0.659±0.021 & \underline{0.647±0.012} & \textbf{0.667±0.011} & \textbf{0.65±0.025} & 0.654±0.019 \\
+ & PorpoiseMMF 60 \cite{chen2022pan} & \underline{0.696±0.045} & \textbf{0.724±0.041} & \textbf{0.717±0.042} & \textbf{0.734±0.045} & \textbf{0.661±0.038} & \underline{0.635±0.025} & \underline{0.645±0.024} & \textbf{0.67±0.018} \\
+ & SurvPath 1k \cite{jaume2023modeling} & 0.612±0.039 & 0.641±0.056 & 0.624±0.053 & 0.654±0.037 & 0.605±0.029 & 0.565±0.068 & 0.552±0.037 & 0.586±0.032 \\
+ & SurvPath 60 \cite{jaume2023modeling} & 0.664±0.054 & \underline{0.666±0.028} & 0.666±0.046 & \underline{0.71±0.037} & 0.602±0.061 & 0.627±0.024 & 0.632±0.031 & \underline{0.657±0.024} \\
+ & SurvPath IPS_pathways \cite{jaume2023modeling} & 0.508±0.065 & 0.609±0.039 & 0.592±0.025 & 0.6±0.051 & 0.611±0.016 & 0.597±0.026 & 0.569±0.051 & 0.567±0.031 \\
+ & SurvPath plat\_resp \cite{jaume2023modeling} & 0.581±0.055 & 0.555±0.056 & 0.536±0.05 & 0.576±0.066 & 0.589±0.035 & 0.549±0.018 & 0.497±0.05 & 0.531±0.032 \\
+\midrule
+\multirow{2}{*}{\rotatebox[origin=c]{90}{\tiny Omics}} 
+ & 1k protein ensemble & 0.6±0.028 & 0.6±0.028 & 0.6±0.028 & 0.6±0.028 & 0.632±0.036 & 0.632±0.036 & 0.632±0.036 & 0.632±0.036 \\
+ & 60 protein ensemble \cite{chowdhury2023proteogenomic} & 0.591±0.037 & 0.591±0.037 & 0.591±0.037 & 0.591±0.037 & 0.597±0.022 & 0.597±0.022 & 0.597±0.022 & 0.597±0.022 \\
+\midrule
+\multirow{1}{*}{\rotatebox[origin=c]{90}{\tiny WSI}} 
+ & clam\_sb \cite{lu2021data} & 0.522±0.015 & 0.546±0.024 & 0.524±0.035 & 0.518±0.04 & 0.537±0.025 & 0.472±0.04 & 0.517±0.02 & 0.482±0.031 \\
+\midrule
+\bottomrule
+\end{tabular}
+\vspace{6pt}
+\caption{Testing on TCGA samples \cite{cancer2011integrated} AUC scores. All primary tumor samples from the discovery dataset are used for training. Bold values are the highest scores for a given feature extractor and architecture. Underlined are the second-highest scores.}
+\label{tab:HGSOC train TCGA test}\end{table}

@@ -63,6 +63,9 @@ def clean_TCGA(TCGA_OV_slides_folder_path):
     # Extract TCGA identifiers from filenames and create a new DataFrame
     # Assuming the TCGA ID is always at the start of the filename up to the third '-'
     file_df = pd.DataFrame({'Filename': filenames})
+    file_df['slide_type'] = file_df['Filename'].str.extract(r'-([^-\.]+)\.')
+    slide_types = ['TS1','DX1','TSA','DX2']
+    file_df = file_df[file_df['slide_type'].isin(slide_types)]
     file_df['bcr_patient_barcode'] = file_df['Filename'].apply(lambda x: '-'.join(x.split('-')[:3]))
     proteomics_and_wsi = merged.merge(file_df, on='bcr_patient_barcode', how='left')
     proteomics_and_wsi["Filename"] = proteomics_and_wsi["Filename"].str[:-4]
@@ -158,10 +161,30 @@ def save_splits(main_df,task_type,tumor_location):
         unique_groups = groups.nunique()
         print(f"Number of unique groups: {unique_groups}")
 
+    
+    elif task_type =="Combined_MAYO_hold_out":
+        cv_data = data[data['Sample Source'].isin(["UAB","FHCRC","TCGA"])]
+        groups = cv_data[cv_data["Tumor type"]=="Primary"]['case_id'].astype(str)
+        # only train in primary data
+        cv_data = cv_data[cv_data["Tumor type"]=="Primary"]['slide_id']
+        data = data[data["Tumor type"]==tumor_location]
+        test_data = data[data['Sample Source']=="Mayo"]['slide_id']
 
-    # Create a KFold object for 5 folds
-    # kf = KFold(n_splits=5, shuffle=True, random_state=42)
-    # Directory to store split files
+        unique_groups = groups.nunique()
+        print(f"Number of unique groups: {unique_groups}")
+
+
+    elif task_type =="Combined_UAB_hold_out":
+        cv_data = data[data['Sample Source'].isin(["Mayo","FHCRC","TCGA"])]
+        groups = cv_data[cv_data["Tumor type"]=="Primary"]['case_id'].astype(str)
+        # only train in primary data
+        cv_data = cv_data[cv_data["Tumor type"]=="Primary"]['slide_id']
+        data = data[data["Tumor type"]==tumor_location]
+        test_data = data[data['Sample Source']=="UAB"]['slide_id']
+
+        unique_groups = groups.nunique()
+        print(f"Number of unique groups: {unique_groups}")
+
 
     kf = GroupKFold(n_splits=5)
     # The groups parameter should be the 'case_id' column of your DataFrame
@@ -254,5 +277,15 @@ if __name__ == "__main__":
         save_splits(main_df,"HGSOC_MAYO_hold_out",tumor_location)
         # Split: 4: HGSOC UBC hold out
         save_splits(main_df,"HGSOC_UAB_hold_out",tumor_location)
+
+        # Split: 5: Combined MAYO hold out
+        save_splits(main_df,"Combined_MAYO_hold_out",tumor_location) # only train on primary tumor.
+        # Split: 6: Combined UBC hold out
+        save_splits(main_df,"Combined_UAB_hold_out",tumor_location)
+
+
+
+
+
 
     print("done.")
