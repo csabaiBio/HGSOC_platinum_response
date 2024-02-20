@@ -73,7 +73,7 @@ parser.add_argument('--data_root_dir', type=str, default=None,
                     help='data directory')
 parser.add_argument('--max_epochs', type=int, default=200,
                     help='maximum number of epochs to train (default: 200)')
-parser.add_argument('--lr', type=float, default=1e-5,
+parser.add_argument('--lr', type=float, default=1e-4,
                     help='learning rate (default: 0.0001)')
 parser.add_argument('--label_frac', type=float, default=1.0,
                     help='fraction of training labels (default: 1.0)')
@@ -84,7 +84,7 @@ parser.add_argument('--seed', type=int, default=1,
 parser.add_argument('--k', type=int, default=10, help='number of folds (default: 10)')
 parser.add_argument('--k_start', type=int, default=-1, help='start fold (default: -1, last fold)')
 parser.add_argument('--k_end', type=int, default=-1, help='end fold (default: -1, first fold)')
-parser.add_argument('--results_dir', default='./results/platinum_responce_results_stratified', help='results directory (default: ./results)')
+parser.add_argument('--results_dir', default='./results/platinum_responce_results_10e4', help='results directory (default: ./results)')
 parser.add_argument('--split_dir', type=str, default=None, 
                     required=True,
                     help='manually specify the set of splits to use, ' 
@@ -115,7 +115,7 @@ parser.add_argument('--B', type=int, default=8, help='numbr of positive/negative
 parser.add_argument('--embed_dim', type=int, help='embedding dimension for embeddings going into CLAM')
 parser.add_argument('--omic_sizes', type=str, default=None, help='list of omic sizes for early fusion models.')
 parser.add_argument('--embeddings_path', type=str,nargs='*', default='/tank/WSI_data/Ovarian_WSIs/HGSOC_ovarian/CLAM/level_0/ViT/', help='path to embeddings')
-parser.add_argument('--omics_structure', type=str, default='None',choices=['None','concat_60','chowdry_clusters','60_chowdry_clusters','PPI_network_clusters','TCGA_grouped_1k','concat_1k','plat_response_pathways'], help='way to pack omics data')
+parser.add_argument('--omics_structure', type=str, default='None',choices=['None','concat_60','chowdry_clusters','60_chowdry_clusters','PPI_network_clusters','TCGA_grouped_1k','concat_1k','plat_response_pathways','IPS_pathways'], help='way to pack omics data')
 
 args = parser.parse_args()
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")

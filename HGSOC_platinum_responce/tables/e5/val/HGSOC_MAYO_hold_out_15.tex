@@ -1,0 +1,33 @@
+\begin{table}[ht]
+\footnotesize
+\centering
+\begin{tabular}{cc|cccc|cccc}
+\toprule
+ & \multicolumn{1}{c}{HGSOC_MAYO_hold_out_15} & \multicolumn{3}{c}{Primary} & \multicolumn{3}{c}{Metastatic} \\
+\midrule
+ & Model &  Lunit-Dino \cite{kang2023benchmarking} & OV-Dino (ours) &  CTransPath \cite{wang2022transformer}  & ensemble & Lunit-Dino & OV-Dino &  CTransPath & ensemble \\
+\midrule
+\multirow{10}{*}{\rotatebox[origin=c]{90}{\tiny Multimodal}} 
+ & MCAT 1k \cite{chen2021multimodal} & 0.507±0.09 & \textbf{0.67±0.117} & 0.478±0.117 & 0.643±0.05 & 0.635±0.124 & 0.694±0.134 & 0.663±0.179 & 0.714±0.061 \\
+ & MCAT 60 \cite{chen2021multimodal} & 0.512±0.06 & 0.584±0.154 & 0.481±0.116 & 0.631±0.053 & 0.669±0.135 & 0.705±0.151 & 0.719±0.198 & 0.701±0.053 \\
+ & MCAT IPS_pathways \cite{chen2021multimodal} & 0.503±0.079 & 0.597±0.046 & 0.525±0.091 & \underline{0.671±0.055} & 0.68±0.163 & 0.689±0.144 & 0.703±0.162 & 0.655±0.059 \\
+ & MCAT plat\_resp \cite{chen2021multimodal} & 0.505±0.108 & 0.632±0.037 & 0.477±0.072 & 0.669±0.093 & 0.664±0.154 & 0.666±0.159 & 0.684±0.154 & 0.629±0.066 \\
+ & PorpoiseMMF 1k \cite{chen2022pan} & \underline{0.672±0.064} & 0.588±0.089 & 0.599±0.07 & 0.485±0.057 & 0.501±0.055 & 0.499±0.063 & 0.588±0.069 & 0.818±0.055 \\
+ & PorpoiseMMF 60 \cite{chen2022pan} & \textbf{0.71±0.092} & 0.594±0.106 & 0.556±0.085 & 0.651±0.072 & 0.731±0.131 & 0.682±0.206 & 0.613±0.217 & \underline{0.847±0.062} \\
+ & SurvPath 1k \cite{jaume2023modeling} & 0.591±0.091 & 0.586±0.112 & 0.591±0.134 & 0.511±0.103 & 0.618±0.139 & 0.635±0.133 & 0.654±0.106 & 0.748±0.037 \\
+ & SurvPath 60 \cite{jaume2023modeling} & 0.64±0.123 & 0.629±0.039 & 0.566±0.09 & 0.602±0.064 & 0.78±0.187 & \underline{0.823±0.11} & \underline{0.809±0.231} & 0.777±0.031 \\
+ & SurvPath IPS_pathways \cite{jaume2023modeling} & 0.636±0.128 & 0.537±0.079 & 0.493±0.081 & 0.605±0.078 & 0.597±0.102 & 0.599±0.107 & 0.568±0.155 & 0.842±0.038 \\
+ & SurvPath plat\_resp \cite{jaume2023modeling} & 0.668±0.11 & 0.664±0.096 & \underline{0.635±0.075} & 0.615±0.073 & 0.574±0.162 & 0.587±0.145 & 0.575±0.119 & 0.736±0.054 \\
+\midrule
+\multirow{2}{*}{\rotatebox[origin=c]{90}{\tiny Omics}} 
+ & 1k protein ensemble & 0.594±0.091 & 0.594±0.091 & 0.594±0.091 & 0.594±0.091 & \underline{0.804±0.118} & 0.804±0.118 & 0.804±0.118 & 0.804±0.118 \\
+ & 60 protein ensemble \cite{chowdhury2023proteogenomic} & 0.669±0.067 & \underline{0.669±0.067} & \textbf{0.669±0.067} & 0.669±0.067 & \textbf{0.897±0.079} & \textbf{0.897±0.079} & \textbf{0.897±0.079} & \textbf{0.897±0.079} \\
+\midrule
+\multirow{1}{*}{\rotatebox[origin=c]{90}{\tiny WSI}} 
+ & clam\_sb \cite{lu2021data} & 0.346±0.163 & 0.353±0.138 & 0.409±0.13 & \textbf{0.718±0.087} & 0.579±0.063 & 0.684±0.166 & 0.586±0.152 & 0.744±0.019 \\
+\midrule
+\bottomrule
+\end{tabular}
+\vspace{6pt}
+\caption{Placeholder}
+\label{tab:HGSOC_MAYO_hold_out_15}\end{table}

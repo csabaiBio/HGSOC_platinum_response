@@ -1,0 +1,33 @@
+\begin{table}[ht]
+\footnotesize
+\centering
+\begin{tabular}{cc|cccc|cccc}
+\toprule
+ & \multicolumn{1}{c}{TCGA_TRAIN_HGSOC_15} & \multicolumn{3}{c}{Primary} & \multicolumn{3}{c}{Metastatic} \\
+\midrule
+ & Model &  Lunit-Dino \cite{kang2023benchmarking} & OV-Dino (ours) &  CTransPath \cite{wang2022transformer}  & ensemble & Lunit-Dino & OV-Dino &  CTransPath & ensemble \\
+\midrule
+\multirow{10}{*}{\rotatebox[origin=c]{90}{\tiny Multimodal}} 
+ & MCAT 1k \cite{chen2021multimodal} & 0.591±0.028 & 0.512±0.013 & 0.542±0.036 & 0.541±0.026 & 0.392±0.042 & 0.418±0.059 & 0.412±0.047 & 0.391±0.05 \\
+ & MCAT 60 \cite{chen2021multimodal} & 0.581±0.04 & 0.523±0.032 & 0.561±0.032 & 0.548±0.032 & 0.395±0.039 & 0.491±0.041 & 0.461±0.031 & 0.434±0.04 \\
+ & MCAT IPS_pathways \cite{chen2021multimodal} & 0.559±0.017 & 0.518±0.026 & 0.514±0.04 & 0.519±0.018 & 0.394±0.048 & 0.475±0.036 & 0.386±0.048 & 0.399±0.043 \\
+ & MCAT plat\_resp \cite{chen2021multimodal} & 0.507±0.033 & 0.53±0.025 & 0.471±0.048 & 0.489±0.041 & 0.406±0.037 & 0.414±0.042 & 0.445±0.043 & 0.4±0.063 \\
+ & PorpoiseMMF 1k \cite{chen2022pan} & \underline{0.676±0.022} & \underline{0.668±0.03} & \textbf{0.662±0.032} & \textbf{0.671±0.029} & \underline{0.6±0.061} & \underline{0.593±0.061} & \underline{0.574±0.063} & \textbf{0.589±0.06} \\
+ & PorpoiseMMF 60 \cite{chen2022pan} & \textbf{0.725±0.03} & \textbf{0.693±0.047} & 0.62±0.027 & \underline{0.667±0.034} & \textbf{0.705±0.033} & 0.524±0.06 & 0.421±0.042 & 0.479±0.052 \\
+ & SurvPath 1k \cite{jaume2023modeling} & 0.591±0.028 & 0.623±0.031 & 0.621±0.02 & 0.623±0.029 & 0.486±0.068 & 0.493±0.048 & 0.522±0.059 & 0.5±0.063 \\
+ & SurvPath 60 \cite{jaume2023modeling} & 0.645±0.042 & 0.623±0.023 & 0.584±0.018 & 0.624±0.03 & 0.534±0.053 & \textbf{0.612±0.037} & 0.542±0.026 & 0.572±0.036 \\
+ & SurvPath IPS_pathways \cite{jaume2023modeling} & 0.557±0.018 & 0.511±0.025 & 0.515±0.026 & 0.537±0.021 & 0.535±0.073 & 0.532±0.068 & 0.502±0.054 & 0.524±0.072 \\
+ & SurvPath plat\_resp \cite{jaume2023modeling} & 0.528±0.022 & 0.551±0.015 & 0.539±0.022 & 0.55±0.023 & 0.455±0.066 & 0.423±0.05 & 0.481±0.06 & 0.434±0.066 \\
+\midrule
+\multirow{2}{*}{\rotatebox[origin=c]{90}{\tiny Omics}} 
+ & 1k protein ensemble & 0.653±0.022 & 0.653±0.022 & \underline{0.653±0.022} & 0.653±0.022 & 0.58±0.061 & 0.58±0.061 & \textbf{0.58±0.061} & \underline{0.58±0.061} \\
+ & 60 protein ensemble \cite{chowdhury2023proteogenomic} & 0.653±0.045 & 0.653±0.045 & \underline{0.653±0.045} & 0.653±0.045 & 0.54±0.049 & 0.54±0.049 & 0.54±0.049 & 0.54±0.049 \\
+\midrule
+\multirow{1}{*}{\rotatebox[origin=c]{90}{\tiny WSI}} 
+ & clam\_sb \cite{lu2021data} & 0.527±0.012 & 0.476±0.008 & 0.481±0.012 & 0.476±0.014 & 0.398±0.031 & 0.504±0.033 & 0.442±0.01 & 0.444±0.015 \\
+\midrule
+\bottomrule
+\end{tabular}
+\vspace{6pt}
+\caption{Placeholder}
+\label{tab:TCGA_TRAIN_HGSOC_15}\end{table}

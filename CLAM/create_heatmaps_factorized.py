@@ -28,6 +28,13 @@ from vis_utils.heatmap_utils import initialize_wsi, drawHeatmap, compute_from_pa
 from wsi_core.wsi_utils import sample_rois
 from utils.file_utils import save_hdf5
 
+from captum.attr import IntegratedGradients
+from captum.attr import visualization as viz
+import torch
+
+
+
+
 parser = argparse.ArgumentParser(description='Heatmap inference script')
 parser.add_argument('--save_exp_code', type=str, default=None,
 					help='experiment code')
@@ -48,19 +55,15 @@ def to_device(data, device):
 
 def infer_single_slide(model, patho_feats, genomic_feats, label, reverse_label_dict, k=1):
 
-
     patho_feats, genomic_feats = patho_feats.to(device), to_device(genomic_feats, device)
     # pack features for multimodal models.
     features = [patho_feats, genomic_feats] 
-    print(patho_feats.shape)
-    print(genomic_feats)
 
     with torch.no_grad():
         if isinstance(model, (CLAM_SB, CLAM_MB, PorpoiseMMF)):
             logits, Y_prob, Y_hat, A, _ = model(features)
             Y_hat = Y_hat.item()
             A_omic = A.clone()
-
 
             if isinstance(model, (CLAM_MB,)):
                 A = A[Y_hat]
@@ -69,9 +72,18 @@ def infer_single_slide(model, patho_feats, genomic_feats, label, reverse_label_d
             A = A.view(-1, 1).cpu().numpy()
 
         elif isinstance(model, (SurvPath,MCAT_Surv)):
-
             logits, Y_prob, Y_hat, _, A = model(features)
             Y_hat = Y_hat.item()
+            # Trying integrated gradients to get more fione grained interpretability.
+            integrated_gradients = IntegratedGradients(model.captum) # use custom captum as forward pass!
+
+            inputs = (features[0],*features[1]) 
+
+            print("inputs")
+            print(label) # unspecified? 
+            # Compute attributions using Integrated Gradients
+            attributions_ig = integrated_gradients.attribute(inputs, target=Y_hat, n_steps=50,internal_batch_size=50)
+            print("feature attribution!")
 
         else:
             raise NotImplementedError
@@ -98,6 +110,7 @@ def infer_single_slide(model, patho_feats, genomic_feats, label, reverse_label_d
             A_omic = A["omic"] #[1,9]
             A = A_coattn[0,0,:,:].cpu().numpy()
 
+
         elif isinstance(model, (PorpoiseMMF)):
             
             logits, Y_prob, Y_hat, A_raw, results_dict
@@ -106,7 +119,7 @@ def infer_single_slide(model, patho_feats, genomic_feats, label, reverse_label_d
             A = A_coattn[0,0,:,:].cpu().numpy()
             
         
-    return ids, preds_str, probs, A, A_omic
+    return ids, preds_str, probs, A, A_omic, attributions_ig
 
 def load_params(df_entry, params):
 	for key in params.keys():
@@ -556,11 +569,11 @@ def main(args):
         print("histopatho feats shape", patho_feats.shape)
 
         process_stack.loc[i, 'bag_size'] = len(patho_feats)
-        Y_hats, Y_hats_str, Y_probs, A, A_omic = infer_single_slide(model, patho_feats, genomic_feats, label, reverse_label_dict, namespaces['exp_args'].n_classes)
+        Y_hats, Y_hats_str, Y_probs, A, A_omic, attributions_ig = infer_single_slide(model, patho_feats, genomic_feats, label, reverse_label_dict, namespaces['exp_args'].n_classes)
         
         # save attentions of patways genes and proteins in save dir... 
-
         np.save(r_slide_save_dir+"/omics_attns.npy", A_omic.cpu())
+        torch.save(attributions_ig, f"{r_slide_save_dir}/attributions_ig.pt")
 
         # loop over all attn heads here.  
 
@@ -591,10 +604,12 @@ def main(args):
                 scores = file['attention_scores'][:]
                 coords = file['coords'][:]
                 file.close()
-                # sample_patches_and_save_heatmaps(process_stack, i, wsi_object, namespaces['patch_args'], namespaces['exp_args'], namespaces['sample_args'], scores, coords, label, Y_hats, slide_id)
                 print('vis_level')
                 print(def_vis_params["vis_level"])
                 generate_and_save_heatmaps(scores, coords, slide_path, wsi_object, namespaces['heatmap_args'], namespaces['patch_args'], vis_patch_size, r_slide_save_dir, p_slide_save_dir,slide_id, blocky_wsi_kwargs['top_left'], blocky_wsi_kwargs['bot_right'],map_number)
+
+                # Decide how to save patches  
+                # sample_patches_and_save_heatmaps(process_stack, i, wsi_object, namespaces['patch_args'], namespaces['exp_args'], namespaces['sample_args'], scores, coords, label, Y_hats, slide_id)
 
     save_configuration(namespaces['exp_args'], config_dict)
 

@@ -17,6 +17,7 @@ import json
 def get_rf_auc_list(split_folder_path,prots):
     '''Perform classical experiments with omics data only as in Chowdry et al'''
     test_aucs = []
+    val_aucs = []
     # Loop over split files and create train, val, test subsets
     for filename in os.listdir(split_folder_path):
         if filename.endswith('.csv'):  # Assuming the files are in CSV format use given format... 
@@ -34,6 +35,10 @@ def get_rf_auc_list(split_folder_path,prots):
             X_test = test_df[prots]  # Replace 'label_column' with your label column name
             y_test = test_df['label']  # Replace 'label_column' with your label column name
 
+            X_val = val_df[prots]  # Replace 'label_column' with your label column name
+            y_val = val_df['label']  # Replace 'label_column' with your label column name
+
+
             # Initialize and train the Random Forest classifier
 
             random_forest = RandomForestRegressor()
@@ -47,20 +52,19 @@ def get_rf_auc_list(split_folder_path,prots):
                     ('xgboost', xgboost_model)
                 ]
             )
-
-            # rf_clf = RandomForestClassifier()
             ensemble.fit(X_train, y_train)
 
             # Make predictions on the test set
             rf_pred = ensemble.predict(X_test)
-
-            # Evaluate the Random Forest model
-            # rf_accuracy = accuracy_score(y_test, rf_pred)
             rf_roc_auc = roc_auc_score(y_test, rf_pred)
-            # print(f"Random Forest ROC AUC: {rf_roc_auc}")
             test_aucs.append(rf_roc_auc)
+
+            # Make predictions on the val set
+            rf_pred = ensemble.predict(X_val)
+            rf_roc_auc = roc_auc_score(y_val, rf_pred)
+            val_aucs.append(rf_roc_auc)
             
-    return test_aucs
+    return test_aucs, val_aucs
 
 
 
@@ -87,15 +91,17 @@ for root, subfolders, files in os.walk(splits_folder):
         # Construct the path to the subfolder
         split_folder_path = os.path.join(root, subfolder)
 
-        aucs_60 = get_rf_auc_list(split_folder_path,prots_60)
-        aucs_1k = get_rf_auc_list(split_folder_path,prots_1k)
+        aucs_60, val_aucs_60 = get_rf_auc_list(split_folder_path,prots_60)
+        aucs_1k, val_aucs_1k = get_rf_auc_list(split_folder_path,prots_1k)
 
         classical_results_60[split_folder_path.split('/')[-1]]=aucs_60
         classical_results_1k[split_folder_path.split('/')[-1]]=aucs_1k
+
+        classical_results_60[split_folder_path.split('/')[-1]+"_val"]=val_aucs_60
+        classical_results_1k[split_folder_path.split('/')[-1]+"_val"]=val_aucs_1k
 
 # Save results for paper tables.
 classical_results = [classical_results_60,classical_results_1k]
 
 with open('classical_results_stratified.json', 'w') as json_file:
     json.dump(classical_results, json_file)
-

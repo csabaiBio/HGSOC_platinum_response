@@ -3,4 +3,4 @@ CUDA_VISIBLE_DEVICES=0 python CLAM/create_heatmaps_factorized.py --config HGSOC_
 # Create multimodal heatmaps
 CUDA_VISIBLE_DEVICES=0 python CLAM/create_heatmaps_factorized.py --config HGSOC_MCAT.yaml
 
-CUDA_VISIBLE_DEVICES=0 python CLAM/create_heatmaps_factorized.py --config HGSOC_SurvPath.yaml
+# CUDA_VISIBLE_DEVICES=0 python CLAM/create_heatmaps_factorized.py --config HGSOC_SurvPath.yaml

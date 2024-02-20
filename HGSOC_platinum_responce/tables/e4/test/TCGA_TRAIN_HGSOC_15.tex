@@ -3,25 +3,25 @@
 \centering
 \begin{tabular}{cc|cccc|cccc}
 \toprule
- & \multicolumn{1}{c}{TCGA train HGSOC test} & \multicolumn{3}{c}{Primary} & \multicolumn{3}{c}{Metastatic} \\
+ & \multicolumn{1}{c}{TCGA_TRAIN_HGSOC_15} & \multicolumn{3}{c}{Primary} & \multicolumn{3}{c}{Metastatic} \\
 \midrule
  & Model &  Lunit-Dino \cite{kang2023benchmarking} & OV-Dino (ours) &  CTransPath \cite{wang2022transformer}  & ensemble & Lunit-Dino & OV-Dino &  CTransPath & ensemble \\
 \midrule
 \multirow{10}{*}{\rotatebox[origin=c]{90}{\tiny Multimodal}} 
  & MCAT 1k \cite{chen2021multimodal} & 0.712±0.023 & \underline{0.686±0.046} & \underline{0.735±0.021} & \underline{0.725±0.025} & 0.629±0.031 & 0.564±0.035 & 0.618±0.007 & 0.629±0.021 \\
  & MCAT 60 \cite{chen2021multimodal} & 0.712±0.061 & 0.67±0.058 & \textbf{0.757±0.029} & 0.722±0.043 & \underline{0.657±0.042} & 0.616±0.094 & \textbf{0.685±0.04} & \textbf{0.649±0.053} \\
- & MCAT IPS_pathways \cite{chen2021multimodal} & 0.569±0.059 & 0.621±0.075 & 0.561±0.064 & 0.569±0.059 & 0.529±0.053 & 0.545±0.085 & 0.535±0.059 & 0.529±0.053 \\
+ & MCAT IPS_pathways \cite{chen2021multimodal} & 0.569±0.059 & 0.621±0.075 & 0.561±0.064 & 0.571±0.068 & 0.529±0.053 & 0.545±0.085 & 0.535±0.059 & 0.538±0.058 \\
  & MCAT plat\_resp \cite{chen2021multimodal} & 0.536±0.029 & 0.567±0.043 & 0.561±0.049 & 0.552±0.04 & 0.638±0.036 & 0.554±0.037 & \underline{0.62±0.044} & 0.624±0.035 \\
  & PorpoiseMMF 1k \cite{chen2022pan} & 0.696±0.034 & \textbf{0.693±0.023} & 0.684±0.043 & 0.699±0.019 & 0.616±0.029 & \underline{0.622±0.064} & \underline{0.62±0.031} & 0.621±0.046 \\
  & PorpoiseMMF 60 \cite{chen2022pan} & \textbf{0.796±0.037} & 0.635±0.056 & 0.73±0.039 & \textbf{0.774±0.029} & \textbf{0.688±0.045} & 0.551±0.062 & 0.564±0.053 & \underline{0.635±0.045} \\
  & SurvPath 1k \cite{jaume2023modeling} & \underline{0.717±0.033} & 0.655±0.043 & 0.686±0.072 & 0.717±0.044 & 0.601±0.038 & 0.6±0.057 & 0.578±0.061 & 0.613±0.055 \\
  & SurvPath 60 \cite{jaume2023modeling} & 0.654±0.051 & 0.632±0.054 & 0.658±0.03 & 0.659±0.043 & 0.572±0.031 & \textbf{0.665±0.057} & 0.538±0.055 & 0.587±0.031 \\
- & SurvPath IPS_pathways \cite{jaume2023modeling} & 0.601±0.029 & 0.576±0.021 & 0.568±0.05 & 0.601±0.029 & 0.44±0.035 & 0.503±0.051 & 0.429±0.032 & 0.44±0.035 \\
- & SurvPath plat\_resp \cite{jaume2023modeling} & 0.577±0.029 & 0.521±0.041 & 0.535±0.03 & 0.597±0.016 & 0.444±0.029 & 0.471±0.045 & 0.452±0.023 & 0.458±0.038 \\
+ & SurvPath IPS_pathways \cite{jaume2023modeling} & 0.601±0.029 & 0.576±0.021 & 0.568±0.05 & 0.594±0.018 & 0.44±0.035 & 0.503±0.051 & 0.429±0.032 & 0.45±0.045 \\
+ & SurvPath plat\_resp \cite{jaume2023modeling} & 0.577±0.029 & 0.521±0.041 & 0.535±0.03 & 0.537±0.031 & 0.444±0.029 & 0.471±0.045 & 0.452±0.023 & 0.46±0.028 \\
 \midrule
 \multirow{2}{*}{\rotatebox[origin=c]{90}{\tiny Omics}} 
- & 1k protein ensemble & 0.661±0.026 & 0.661±0.026 & 0.661±0.026 & 0.661±0.026 & 0.569±0.052 & 0.569±0.052 & 0.569±0.052 & 0.569±0.052 \\
- & 60 protein ensemble \cite{chowdhury2023proteogenomic} & 0.663±0.038 & 0.663±0.038 & 0.663±0.038 & 0.663±0.038 & 0.547±0.046 & 0.547±0.046 & 0.547±0.046 & 0.547±0.046 \\
+ & 1k protein ensemble & 0.653±0.022 & 0.653±0.022 & 0.653±0.022 & 0.653±0.022 & 0.58±0.061 & 0.58±0.061 & 0.58±0.061 & 0.58±0.061 \\
+ & 60 protein ensemble \cite{chowdhury2023proteogenomic} & 0.653±0.045 & 0.653±0.045 & 0.653±0.045 & 0.653±0.045 & 0.54±0.049 & 0.54±0.049 & 0.54±0.049 & 0.54±0.049 \\
 \midrule
 \multirow{1}{*}{\rotatebox[origin=c]{90}{\tiny WSI}} 
  & clam\_sb \cite{lu2021data} & 0.546±0.028 & 0.483±0.033 & 0.523±0.034 & 0.527±0.025 & 0.391±0.042 & 0.467±0.052 & 0.415±0.024 & 0.403±0.044 \\
@@ -29,5 +29,5 @@
 \bottomrule
 \end{tabular}
 \vspace{6pt}
-\caption{Testing on HGSOC samples AUC scores. All primary tumor samples from the discovery dataset are used for training. Bold values are the highest scores for a given feature extractor and architecture. Underlined are the second-highest scores.}
-\label{tab:TCGA train HGSOC test}\end{table}
+\caption{Placeholder}
+\label{tab:TCGA_TRAIN_HGSOC_15}\end{table}
