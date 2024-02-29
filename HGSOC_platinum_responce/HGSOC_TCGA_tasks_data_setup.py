@@ -35,15 +35,15 @@ def clean_TCGA(TCGA_OV_slides_folder_path):
     """Take clinical and protemic data tables from Zhang et.al and organise into form for training and testing."""
     df_ov_clinical = pd.read_excel("../data/HGSOC_Zhang_TCGA_CPTAC_OV/mmc2.xlsx")
     # select tumors with set of stages
-    selected_stages= ["IIIA","IIIB","IIIC","IV"]
-    df_ov_clinical = df_ov_clinical[df_ov_clinical["tumor_stage"].isin(selected_stages)]
+
+    # selected_stages= ["IIIA","IIIB","IIIC","IV"]
+    # df_ov_clinical = df_ov_clinical[df_ov_clinical["tumor_stage"].isin(selected_stages)]
     # Drop tumors without platinum status
     df_ov_clinical = df_ov_clinical[df_ov_clinical['PlatinumStatus'] != "Not available"]
     # remove not avalable... 
     df_ov_clinical['label'] = df_ov_clinical['PlatinumStatus'].map({'Sensitive': 1, 'Resistant': 0})
     # Load proteomics data:
     tcga_proteomic = pd.read_excel("../data/HGSOC_Zhang_TCGA_CPTAC_OV/mmc3-2.xlsx")
-    tcga_prots = tcga_proteomic["hgnc_symbol"].to_list()
     # transopose and organise 
     tcga_proteomic_t = tcga_proteomic.T
     tcga_proteomic_t.columns = tcga_proteomic_t.iloc[1]
@@ -78,8 +78,9 @@ def clean_TCGA(TCGA_OV_slides_folder_path):
     proteomic_subtypes = proteomic_subtypes.rename(columns={'Tumor':'case_id'})
 
     merged = pd.merge(proteomics_and_wsi,proteomic_subtypes, on='case_id',how='left')
+    df_unique = merged.drop_duplicates(subset="slide_id")
 
-    return merged
+    return df_unique
 
 
 @memory.cache
@@ -277,12 +278,10 @@ if __name__ == "__main__":
         save_splits(main_df,"HGSOC_MAYO_hold_out",tumor_location)
         # Split: 4: HGSOC UBC hold out
         save_splits(main_df,"HGSOC_UAB_hold_out",tumor_location)
-
         # Split: 5: Combined MAYO hold out
         save_splits(main_df,"Combined_MAYO_hold_out",tumor_location) # only train on primary tumor.
         # Split: 6: Combined UBC hold out
         save_splits(main_df,"Combined_UAB_hold_out",tumor_location)
-
 
 
 

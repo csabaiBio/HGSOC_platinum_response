@@ -40,7 +40,7 @@ def aggregate_performance(flattened_tables):
 
 def get_max_lr_results(experiment_name,eval):
     dataframes = []
-    for lr in ["e3","e4","e5"]:
+    for lr in ["5e3","5e4","10e4"]:
         df = pd.read_csv("/mnt/ncshare/ozkilim/BRCA/HGSOC_platinum_responce/results_tables_dfs/"+ experiment_name + "_" + eval + "_" + lr + ".csv" )
         df = df.drop(columns=["Unnamed: 0"])
         dataframes.append(df)
@@ -117,12 +117,14 @@ for experiment_name in experiments:
     max_df = get_max_lr_results(experiment_name,eval)
     max_df = flatten_and_filter_multimodal(max_df,type)
     cross_experiment_results.append(max_df)
+    # print(experiment_name)
+    # print(max_df)
 
 ranked = aggregate_performance(cross_experiment_results)
 
 # now wwe have everything to creat the primary table with the best model.
 print(ranked)
-best_model = ranked[["model","backbone"]].iloc[1]
+best_model = ranked[["model","backbone"]].iloc[0]
 print(best_model)
 
 main_table = []

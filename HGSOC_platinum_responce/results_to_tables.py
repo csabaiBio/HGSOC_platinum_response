@@ -24,7 +24,7 @@ def get_auc_scores_from_file(root_dir):
             all_aucs = []
             file_extension = "*.gpu1"
 
-            joined_dir = "/mnt/ncshare/ozkilim/BRCA/results/platinum_responce_results_10"+lr+"/" + root_dir
+            joined_dir = "/mnt/ncshare/ozkilim/BRCA/results/platinum_responce_results_"+lr+"/" + root_dir
             # Recursively traverse the directory and its subdirectories
             for subdir, _, files in os.walk(joined_dir):
                 # Use glob to find all files with the specified extension
@@ -48,7 +48,7 @@ def get_ensemble_auc_scores_from_files(root_dirs):
         accumulated_prob = None
         labels = None
         for root_dir in root_dirs: 
-            file = "/mnt/ncshare/ozkilim/BRCA/results/platinum_responce_results_10"+lr+"/" + root_dir + "/split_"+ str(i) +"_results.pkl"
+            file = "/mnt/ncshare/ozkilim/BRCA/results/platinum_responce_results_"+lr+"/" + root_dir + "/split_"+ str(i) +"_results.pkl"
             #read the pkl 
             df = pd.read_pickle(file)
             data = []
@@ -320,6 +320,7 @@ def create_full_table(experiment_name,proteomics_name):
     # caption = "Testing on TCGA samples \cite{cancer2011integrated} AUC scores. All primary tumor samples from the discovery dataset are used for training. Bold values are the highest scores for a given feature extractor and architecture. Underlined are the second-highest scores."
     latex_table = generate_latex_table(merged_df_1,experiment_name,caption="Placeholder")
     # save table to tex file with header name of part/experiment
+    # print(latex_table)
     with open(save_folder + experiment_name + ".tex", 'w') as f:
         f.write(latex_table)
 
@@ -327,8 +328,8 @@ def create_full_table(experiment_name,proteomics_name):
 
 ######## main #########
 # need baseline omics scroes.
-
-for lr in ["e3","e4","e5"]:
+# ["e3","e4","e5"]
+for lr in ["5e3","5e4","10e4"]:
     for eval in ["test","val"]:
 
         save_folder = "tables/"+lr+"/"+eval+"/"

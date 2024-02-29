@@ -21,3 +21,6 @@ bash_scripts/
 openslide_python/
 Zsofi_BRCA_tables/
 figures/
+HGSOC_platinum_responce/tables/
+legacy/
+notebooks/HRD_analysis/

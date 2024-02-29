@@ -46,10 +46,10 @@ for ((i=0; i<length; i++)); do
     # Priamry tumors 
     ##### ViT 
     exp_name="HGSOC_TRAIN_TCGA_15_${model}_${omics_structure}_ViT_primary"
-    CUDA_VISIBLE_DEVICES=0 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_train_TCGA_test_Primary --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_ViT $embeds_HGSOC_ViT  --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes  &
+    CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_train_TCGA_test_Primary --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_ViT $embeds_HGSOC_ViT  --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes  &
     # ##### Ov_Vit
     exp_name="HGSOC_TRAIN_TCGA_15_${model}_${omics_structure}_OV_ViT_primary"
-    CUDA_VISIBLE_DEVICES=1 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_train_TCGA_test_Primary --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_Ov_ViT $embeds_HGSOC_Ov_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes  &
+    CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_train_TCGA_test_Primary --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_Ov_ViT $embeds_HGSOC_Ov_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes  &
     #### Ctrans path 
     exp_name="HGSOC_TRAIN_TCGA_15_${model}_${omics_structure}_CTransPath_primary"
     CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_train_TCGA_test_Primary --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_CTransPath $embeds_HGSOC_CTransPath --omics_structure $omics_structure --embed_dim 768 --omic_sizes $omic_sizes &
@@ -57,10 +57,10 @@ for ((i=0; i<length; i++)); do
     # Metastatic tumors 
     ##### ViT 
     exp_name="HGSOC_TRAIN_TCGA_15_${model}_${omics_structure}_ViT_metastatic"
-    CUDA_VISIBLE_DEVICES=0 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_train_TCGA_test_Metastatic --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_ViT $embeds_HGSOC_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes &
+    CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_train_TCGA_test_Metastatic --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_ViT $embeds_HGSOC_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes &
     ##### Ov_Vit
     exp_name="HGSOC_TRAIN_TCGA_15_${model}_${omics_structure}_OV_ViT_metastatic"
-    CUDA_VISIBLE_DEVICES=1 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_train_TCGA_test_Metastatic --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_Ov_ViT $embeds_HGSOC_Ov_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes &
+    CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_train_TCGA_test_Metastatic --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_Ov_ViT $embeds_HGSOC_Ov_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes &
     #### Ctrans path 
     exp_name="HGSOC_TRAIN_TCGA_15_${model}_${omics_structure}_CTransPath_metastatic"
     CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_train_TCGA_test_Metastatic --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_CTransPath $embeds_HGSOC_CTransPath --omics_structure $omics_structure --embed_dim 768 --omic_sizes $omic_sizes 
@@ -68,7 +68,7 @@ for ((i=0; i<length; i++)); do
 
 done
 
-# wait
+wait
 
 # # # Part 2. TCGA train HGSOC test
 
@@ -97,10 +97,10 @@ for ((i=0; i<length; i++)); do
 
     ##### ViT 
     exp_name="TCGA_TRAIN_HGSOC_15_${model}_${omics_structure}_ViT_primary"
-    CUDA_VISIBLE_DEVICES=0 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/TCGA_train_HGSOC_test_Primary --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_ViT $embeds_HGSOC_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes  &
+    CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/TCGA_train_HGSOC_test_Primary --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_ViT $embeds_HGSOC_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes  &
     ##### Ov_Vit
     exp_name="TCGA_TRAIN_HGSOC_15_${model}_${omics_structure}_OV_ViT_primary"
-    CUDA_VISIBLE_DEVICES=1 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/TCGA_train_HGSOC_test_Primary --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_Ov_ViT $embeds_HGSOC_Ov_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes &
+    CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/TCGA_train_HGSOC_test_Primary --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_Ov_ViT $embeds_HGSOC_Ov_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes &
     #### Ctrans path 
     exp_name="TCGA_TRAIN_HGSOC_15_${model}_${omics_structure}_CTransPath_primary"
     CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/TCGA_train_HGSOC_test_Primary --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_CTransPath $embeds_HGSOC_CTransPath --omics_structure $omics_structure --embed_dim 768 --omic_sizes $omic_sizes  &
@@ -109,10 +109,10 @@ for ((i=0; i<length; i++)); do
 
     ##### ViT 
     exp_name="TCGA_TRAIN_HGSOC_15_${model}_${omics_structure}_ViT_metastatic"
-    CUDA_VISIBLE_DEVICES=0 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/TCGA_train_HGSOC_test_Metastatic --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_ViT $embeds_HGSOC_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes  &
+    CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/TCGA_train_HGSOC_test_Metastatic --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_ViT $embeds_HGSOC_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes  &
     ##### Ov_Vit
     exp_name="TCGA_TRAIN_HGSOC_15_${model}_${omics_structure}_OV_ViT_metastatic"
-    CUDA_VISIBLE_DEVICES=1 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/TCGA_train_HGSOC_test_Metastatic --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_Ov_ViT $embeds_HGSOC_Ov_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes  &
+    CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/TCGA_train_HGSOC_test_Metastatic --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_Ov_ViT $embeds_HGSOC_Ov_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes  &
     #### Ctrans path 
     exp_name="TCGA_TRAIN_HGSOC_15_${model}_${omics_structure}_CTransPath_metastatic"
     CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/TCGA_train_HGSOC_test_Metastatic --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_CTransPath $embeds_HGSOC_CTransPath --omics_structure $omics_structure --embed_dim 768 --omic_sizes $omic_sizes 
@@ -155,10 +155,10 @@ for ((i=0; i<length; i++)); do
 
     ##### ViT 
     exp_name="HGSOC_UAB_hold_out_15_${model}_${omics_structure}_ViT_primary"
-    CUDA_VISIBLE_DEVICES=0 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_UAB_hold_out_Primary --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_ViT $embeds_HGSOC_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes &
+    CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_UAB_hold_out_Primary --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_ViT $embeds_HGSOC_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes &
     ##### Ov_Vit
     exp_name="HGSOC_UAB_hold_out_15_${model}_${omics_structure}_OV_ViT_primary"
-    CUDA_VISIBLE_DEVICES=1 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_UAB_hold_out_Primary --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_Ov_ViT $embeds_HGSOC_Ov_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes &
+    CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_UAB_hold_out_Primary --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_Ov_ViT $embeds_HGSOC_Ov_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes &
     #### Ctrans path 
     exp_name="HGSOC_UAB_hold_out_15_${model}_${omics_structure}_CTransPath_primary"
     CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_UAB_hold_out_Primary --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_CTransPath $embeds_HGSOC_CTransPath --omics_structure $omics_structure --embed_dim 768 --omic_sizes $omic_sizes &
@@ -167,10 +167,10 @@ for ((i=0; i<length; i++)); do
 
     ##### ViT 
     exp_name="HGSOC_UAB_hold_out_15_${model}_${omics_structure}_ViT_metastatic"
-    CUDA_VISIBLE_DEVICES=0 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_UAB_hold_out_Metastatic --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_ViT $embeds_HGSOC_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes  &
+    CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_UAB_hold_out_Metastatic --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_ViT $embeds_HGSOC_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes  &
     ##### Ov_Vit
     exp_name="HGSOC_UAB_hold_out_15_${model}_${omics_structure}_OV_ViT_metastatic"
-    CUDA_VISIBLE_DEVICES=1 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_UAB_hold_out_Metastatic --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_Ov_ViT $embeds_HGSOC_Ov_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes  &
+    CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_UAB_hold_out_Metastatic --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_Ov_ViT $embeds_HGSOC_Ov_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes  &
     #### Ctrans path 
     exp_name="HGSOC_UAB_hold_out_15_${model}_${omics_structure}_CTransPath_metastatic"
     CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_UAB_hold_out_Metastatic --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_CTransPath $embeds_HGSOC_CTransPath --omics_structure $omics_structure --embed_dim 768 --omic_sizes $omic_sizes  &
@@ -182,10 +182,10 @@ for ((i=0; i<length; i++)); do
 
     ##### ViT 
     exp_name="HGSOC_MAYO_hold_out_15_${model}_${omics_structure}_ViT_primary"
-    CUDA_VISIBLE_DEVICES=0 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_MAYO_hold_out_Primary --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_ViT $embeds_HGSOC_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes  &
+    CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_MAYO_hold_out_Primary --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_ViT $embeds_HGSOC_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes  &
     ##### Ov_Vit
     exp_name="HGSOC_MAYO_hold_out_15_${model}_${omics_structure}_OV_ViT_primary"
-    CUDA_VISIBLE_DEVICES=1 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_MAYO_hold_out_Primary --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_Ov_ViT $embeds_HGSOC_Ov_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes  &
+    CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_MAYO_hold_out_Primary --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_Ov_ViT $embeds_HGSOC_Ov_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes  &
     #### Ctrans path 
     exp_name="HGSOC_MAYO_hold_out_15_${model}_${omics_structure}_CTransPath_primary"
     CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_MAYO_hold_out_Primary --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_CTransPath $embeds_HGSOC_CTransPath --omics_structure $omics_structure --embed_dim 768 --omic_sizes $omic_sizes  &
@@ -194,10 +194,10 @@ for ((i=0; i<length; i++)); do
 
     #### ViT 
     exp_name="HGSOC_MAYO_hold_out_15_${model}_${omics_structure}_ViT_metastatic"
-    CUDA_VISIBLE_DEVICES=0 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_MAYO_hold_out_Metastatic --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_ViT $embeds_HGSOC_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes &
+    CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_MAYO_hold_out_Metastatic --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_ViT $embeds_HGSOC_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes &
     ##### Ov_Vit
     exp_name="HGSOC_MAYO_hold_out_15_${model}_${omics_structure}_OV_ViT_metastatic"
-    CUDA_VISIBLE_DEVICES=1 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_MAYO_hold_out_Metastatic --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_Ov_ViT $embeds_HGSOC_Ov_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes &
+    CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_MAYO_hold_out_Metastatic --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_Ov_ViT $embeds_HGSOC_Ov_ViT --embed_dim 384 --omics_structure $omics_structure --omic_sizes $omic_sizes &
     #### Ctrans path 
     exp_name="HGSOC_MAYO_hold_out_15_${model}_${omics_structure}_CTransPath_metastatic"
     CUDA_VISIBLE_DEVICES=2 python CLAM/main.py --task HGSOC_platinum_response_prediction --split_dir HGSOC_platinum_responce/splits/HGSOC_MAYO_hold_out_Metastatic --exp_code $exp_name --log_data --model_type $model --max_epoch 15 --weighted_sample --k 5 --embeddings_path $embeds_TCGA_CTransPath $embeds_HGSOC_CTransPath --omics_structure $omics_structure --embed_dim 768 --omic_sizes $omic_sizes 

@@ -4,15 +4,15 @@ def clean_TCGA(TCGA_OV_slides_folder_path):
     """Take clinical and protemic data tables from Zhang et.al and organise into form for training and testing."""
     df_ov_clinical = pd.read_excel("../data/HGSOC_Zhang_TCGA_CPTAC_OV/mmc2.xlsx")
     # select tumors with set of stages
-    selected_stages= ["IIIA","IIIB","IIIC","IV"]
-    df_ov_clinical = df_ov_clinical[df_ov_clinical["tumor_stage"].isin(selected_stages)]
+
+    # selected_stages= ["IIIA","IIIB","IIIC","IV"]
+    # df_ov_clinical = df_ov_clinical[df_ov_clinical["tumor_stage"].isin(selected_stages)]
     # Drop tumors without platinum status
     df_ov_clinical = df_ov_clinical[df_ov_clinical['PlatinumStatus'] != "Not available"]
     # remove not avalable... 
     df_ov_clinical['label'] = df_ov_clinical['PlatinumStatus'].map({'Sensitive': 1, 'Resistant': 0})
     # Load proteomics data:
     tcga_proteomic = pd.read_excel("../data/HGSOC_Zhang_TCGA_CPTAC_OV/mmc3-2.xlsx")
-    tcga_prots = tcga_proteomic["hgnc_symbol"].to_list()
     # transopose and organise 
     tcga_proteomic_t = tcga_proteomic.T
     tcga_proteomic_t.columns = tcga_proteomic_t.iloc[1]
@@ -32,12 +32,9 @@ def clean_TCGA(TCGA_OV_slides_folder_path):
     # Extract TCGA identifiers from filenames and create a new DataFrame
     # Assuming the TCGA ID is always at the start of the filename up to the third '-'
     file_df = pd.DataFrame({'Filename': filenames})
-    #TODO: select only FFPE slides...
-
     file_df['slide_type'] = file_df['Filename'].str.extract(r'-([^-\.]+)\.')
     slide_types = ['TS1','DX1','TSA','DX2']
     file_df = file_df[file_df['slide_type'].isin(slide_types)]
-
     file_df['bcr_patient_barcode'] = file_df['Filename'].apply(lambda x: '-'.join(x.split('-')[:3]))
     proteomics_and_wsi = merged.merge(file_df, on='bcr_patient_barcode', how='left')
     proteomics_and_wsi["Filename"] = proteomics_and_wsi["Filename"].str[:-4]
@@ -50,5 +47,6 @@ def clean_TCGA(TCGA_OV_slides_folder_path):
     proteomic_subtypes = proteomic_subtypes.rename(columns={'Tumor':'case_id'})
 
     merged = pd.merge(proteomics_and_wsi,proteomic_subtypes, on='case_id',how='left')
+    df_unique = merged.drop_duplicates(subset="slide_id")
 
-    return merged
+    return df_unique

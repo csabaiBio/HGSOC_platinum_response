@@ -318,6 +318,26 @@ def load_genomic_features(process_stack, i, omics_structure):
         # Convert to PyTorch tensor
         genomic_feats = torch.tensor(row_data.values, dtype=torch.float32) 
 
+    elif omics_structure == "IPS_pathways":
+			
+        genomic_feats=[]
+        with open('HGSOC_platinum_responce/proteomics_combinations.json', 'r') as file:
+            protein_sets = json.load(file)
+
+        protein_categories = protein_sets['IPS_pathways']
+
+        # Create list of vectors for MCAT. 
+        for selected_prots in protein_categories.values():
+            sub_df = process_stack[selected_prots]
+            row_data = sub_df.loc[i].astype(float) # get row for protien group
+            row_data = torch.tensor(row_data.values, dtype=torch.float32) 
+            genomic_feats.append(row_data) 
+
+        # the order has been mixed? this stage the values in the list re not matching???????
+
+        print("omics shape")
+        print([i.shape[0] for i in genomic_feats])
+
     elif omics_structure == "chowdry_clusters":
 
         # self.groupings = pd.read_csv("/mnt/ncshare/ozkilim/BRCA/data/HGSOC_processed_data/protien_GO_groupings.csv") #why not in init?....
@@ -565,6 +585,7 @@ def main(args):
 
         genomic_feats = load_genomic_features(process_stack, i, namespaces['model_args'].omics_structure)
         
+        print(namespaces['model_args'].omics_structure)
         print("genomic feats shape", genomic_feats[0].shape)
         print("histopatho feats shape", patho_feats.shape)
 
@@ -573,7 +594,7 @@ def main(args):
         
         # save attentions of patways genes and proteins in save dir... 
         np.save(r_slide_save_dir+"/omics_attns.npy", A_omic.cpu())
-        torch.save(attributions_ig, f"{r_slide_save_dir}/attributions_ig.pt")
+        torch.save(attributions_ig[1:], f"{r_slide_save_dir}/attributions_ig.pt")
 
         # loop over all attn heads here.  
 

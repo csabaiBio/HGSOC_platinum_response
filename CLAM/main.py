@@ -73,7 +73,7 @@ parser.add_argument('--data_root_dir', type=str, default=None,
                     help='data directory')
 parser.add_argument('--max_epochs', type=int, default=200,
                     help='maximum number of epochs to train (default: 200)')
-parser.add_argument('--lr', type=float, default=1e-4,
+parser.add_argument('--lr', type=float, default=5e-3,
                     help='learning rate (default: 0.0001)')
 parser.add_argument('--label_frac', type=float, default=1.0,
                     help='fraction of training labels (default: 1.0)')
@@ -84,7 +84,7 @@ parser.add_argument('--seed', type=int, default=1,
 parser.add_argument('--k', type=int, default=10, help='number of folds (default: 10)')
 parser.add_argument('--k_start', type=int, default=-1, help='start fold (default: -1, last fold)')
 parser.add_argument('--k_end', type=int, default=-1, help='end fold (default: -1, first fold)')
-parser.add_argument('--results_dir', default='./results/platinum_responce_results_10e4', help='results directory (default: ./results)')
+parser.add_argument('--results_dir', default='./results/platinum_responce_results_5e3', help='results directory (default: ./results)')
 parser.add_argument('--split_dir', type=str, default=None, 
                     required=True,
                     help='manually specify the set of splits to use, ' 
@@ -93,7 +93,7 @@ parser.add_argument('--log_data', action='store_true', default=False, help='log 
 parser.add_argument('--testing', action='store_true', default=False, help='debugging tool')
 parser.add_argument('--early_stopping', action='store_true', default=False, help='enable early stopping')
 parser.add_argument('--opt', type=str, choices = ['adam', 'sgd'], default='adam')
-parser.add_argument('--drop_out', action='store_true', default=False, help='enable dropout (p=0.25)')
+parser.add_argument('--drop_out', default=False, help='enable dropout (p=0.25)')
 parser.add_argument('--bag_loss', type=str, choices=['svm', 'ce'], default='ce',
                      help='slide-level classification loss function (default: ce)')
 parser.add_argument('--model_type', type=str, choices=['clam_sb', 'clam_mb', 'mil', 'multimodal','PorpoiseMMF','MCAT_Surv','SurvPath'], default='clam_sb', 
