@@ -64,3 +64,5 @@ classical = classical_results[0]['TCGA_train_HGSOC_test_Primary']
 root_dir_multimodal = "TCGA_TRAIN_HGSOC_15_PorpoiseMMF_concat_1k_ViT_primary_s1"
 
 t_test(classical,root_dir_multimodal)
+
+# automate over entire table?..
