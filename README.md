@@ -94,7 +94,7 @@ OV-Dino/
 
 ```HGSOC_platinum_response/HRD_results_analysis.ipynb```
 
-# 8. Self-supervised learning pre-training
+## 8. Self-supervised learning pre-training
 
 ## Collated data for SSL
 
