@@ -3,6 +3,7 @@
 
 #### Oz Kilim, Alex Olar, András Biricz, Lilla Madaras, Péter Pollner, Zoltán Szállási, Zsofia Sztupinszki, István Csabai
 
+##### "Patients with High-Grade Serous Ovarian Cancer (HGSOC) exhibit varied responses to treatment, with 20-30% showing inherent resistance to platinum-based chemotherapy. While hematoxylin-eosin (H&E) pathological slides are used for routine diagnosis of cancer type, they may also contain diagnostically useful information about treatment response. Our study demonstrates that combining H&E-stained Whole Slide Images (WSIs) with proteomic signatures using a multimodal deep learning framework significantly improves the prediction of platinum response in both discovery and validation cohorts. This method outperforms the Homologous Recombination Deficiency (HRD) score in predicting platinum response and overall patient survival. The study sets new performance benchmarks and explores the intersection of histology and proteomics, highlighting phenotypes related to treatment response pathways, including homologous recombination, DNA damage response, nucleotide synthesis, apoptosis, and ER stress. This integrative approach has the potential to enhance personalized treatment and provide insights into the therapeutic vulnerabilities of HGSOC."
 ![main](./figures/graphical_abstract_.png)
 
 ## 1. Download data, cleaning, and creation of splits.
@@ -98,14 +99,14 @@ OV-Dino/
 
 ## Collated data for SSL
 
-| Dataset | Num WSIs | Micron per pixel | Data type | Link |
-|----------|----------|----------|----------|----------|
-| TCGA_OV | 1481 | 0.5040 | .svs | Row 1, Col 5 |
-| CPTAC_OV | 221 | 0.2501 | .svs | Row 2, Col 5 |
-| HGSC | 349 | 0.4965 | .svs | Row 3, Col 5 |
-| Ovarian Bevacizumab Response | 284 | 0.5 (20X) | .tif | Row 4, Col 5 |
-| UBC OCEAN | 538 | 0.5 | .png | Row 5, Col 5 |
-| Internal | 42 | 0.424 | .mrxs | Row 6, Col 5 |
+| Dataset | Num WSIs | Micron per pixel | Data type |
+|----------|----------|----------|----------|
+| TCGA_OV | 1481 | 0.5040 | .svs |
+| CPTAC_OV | 221 | 0.2501 | .svs |
+| HGSC | 349 | 0.4965 | .svs |
+| Ovarian Bevacizumab Response | 284 | 0.5 (20X) | .tif |
+| UBC OCEAN | 538 | 0.5 | .png |
+| Internal | 42 | 0.424 | .mrxs |
 
 ### Generate h5 files for all ovarian slides available at correct magnifications.
 
